@@ -62,7 +62,7 @@ def main():
     final_data = {
         "nivel": 0.0,
         "caudal": 0.0,
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": datetime.utcnow().isoformat() + "Z", 
         "status": "error"
     }
     
@@ -100,7 +100,7 @@ def main():
                 final_data["nivel"] = result["level"]
                 final_data["caudal"] = result["flow"]
                 final_data["status"] = "success"
-                final_data["timestamp"] = datetime.now().isoformat()
+                final_data["timestamp"] = datetime.utcnow().isoformat() + "Z"
                 success = True
                 print("Datos extraidos correctamente")
             else:
