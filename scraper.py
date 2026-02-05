@@ -2,107 +2,114 @@ import requests
 import json
 import re
 import urllib3
+import urllib.parse
 from datetime import datetime
 
-# Desactivar avisos de seguridad (necesario para webs antiguas del gobierno)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Configuración
-URL = "https://www.chguadalquivir.es/saih/AforosTabla.aspx"
+TARGET_URL = "https://www.chguadalquivir.es/saih/AforosTabla.aspx"
 JSON_FILE = "datos.json"
 
-# Cabeceras "Antirrobo" para parecer un PC normal
+BRIDGES = [
+    {
+        "url": "https://api.allorigins.win/get?url=" + urllib.parse.quote(TARGET_URL),
+        "type": "json"
+    },
+    {
+        "url": "https://api.codetabs.com/v1/proxy?quest=" + urllib.parse.quote(TARGET_URL),
+        "type": "html"
+    }
+]
+
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    'Accept-Language': 'es-ES,es;q=0.9',
-    'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': '1'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 }
 
-def guardar_json(datos):
+def save_json(data):
     with open(JSON_FILE, 'w') as f:
-        json.dump(datos, f)
-    print(f"💾 JSON Final guardado: {datos}")
+        json.dump(data, f)
+    print(f"Archivo guardado: {data}")
+
+def parse_html(html_content):
+    html = html_content.upper()
+    
+    if ('A17' in html or 'ECIJA' in html) and 'GENIL' in html:
+        rows = html.split('<TR')
+        for row in rows:
+            if ('A17' in row or 'ECIJA' in row) and 'GENIL' in row:
+                clean_text = re.sub(r'<[^>]+>', ' ', row)
+                clean_text = " ".join(clean_text.split())
+                
+                print(f"Fila encontrada: {clean_text}")
+                
+                numbers = re.findall(r'\d+[.,]\d{2}', clean_text)
+                
+                if len(numbers) >= 1:
+                    level = float(numbers[0].replace(',', '.'))
+                    flow = 0.0
+                    
+                    if len(numbers) > 1:
+                        try:
+                            flow = float(numbers[-1].replace('.', '').replace(',', '.'))
+                        except:
+                            flow = 0.0
+                    
+                    return {"level": level, "flow": flow, "found": True}
+                    
+    return {"found": False}
 
 def main():
-    print("🕵️ INICIANDO MODO DETECTIVE...")
-    
-    datos = {
-        "nivel": 0.0, 
-        "caudal": 0.0, 
-        "timestamp": datetime.now().isoformat(), 
+    final_data = {
+        "nivel": 0.0,
+        "caudal": 0.0,
+        "timestamp": datetime.now().isoformat(),
         "status": "error"
     }
+    
+    success = False
 
-    try:
-        # Petición ignorando verificación SSL (verify=False)
-        print(f"📡 Conectando a {URL}...")
-        response = requests.get(URL, headers=HEADERS, timeout=30, verify=False)
-        response.encoding = 'utf-8'
+    for bridge in BRIDGES:
+        if success:
+            break
+            
+        print(f"Conectando via puente: {bridge['url']}")
         
-        print(f"⚡ Estado HTTP: {response.status_code}")
-        
-        if response.status_code != 200:
-            print("❌ La web devolvió un error.")
-            guardar_json(datos)
-            return
+        try:
+            response = requests.get(bridge['url'], headers=HEADERS, timeout=30, verify=False)
+            
+            if response.status_code != 200:
+                print(f"Error HTTP {response.status_code}")
+                continue
 
-        html = response.text.upper() # Convertimos todo a mayúsculas para buscar mejor
-        print(f"📄 Tamaño descarga: {len(html)} caracteres")
-        
-        # 1. VERIFICAR SI NOS HAN BLOQUEADO
-        titulo = re.search(r'<TITLE>(.*?)</TITLE>', html)
-        if titulo:
-            print(f"🏷️ Título de la web descargada: {titulo.group(1).strip()}")
-        else:
-            print("⚠️ La página NO tiene título (¿Página blanca?).")
+            content = ""
+            if bridge['type'] == "json":
+                try:
+                    json_resp = response.json()
+                    content = json_resp.get("contents", "")
+                except:
+                    continue
+            else:
+                content = response.text
 
-        # 2. INTENTAR BUSCAR LA ESTACIÓN A17 (Más fiable que 'ECIJA')
-        print("🔎 Buscando 'A17' y 'GENIL'...")
-        
-        filas = html.split('<TR')
-        encontrado = False
+            if not content:
+                continue
 
-        for fila in filas:
-            # Buscamos A17 (código) o ECIJA, y que sea del río GENIL
-            if ('A17' in fila or 'ECIJA' in fila) and 'GENIL' in fila:
-                
-                # Limpiamos el HTML para ver el texto puro
-                texto_limpio = re.sub(r'<[^>]+>', ' ', fila)
-                texto_limpio = " ".join(texto_limpio.split())
-                
-                print(f"🎯 FILA ENCONTRADA: {texto_limpio}")
-                
-                # Buscamos números decimales (formato 0,45 o 2.34)
-                numeros = re.findall(r'\d+[.,]\d{2}', texto_limpio)
-                print(f"🔢 Números detectados: {numeros}")
-                
-                if len(numeros) >= 1:
-                    # El primer número suele ser el nivel
-                    datos["nivel"] = float(numeros[0].replace(',', '.'))
-                    
-                    # Si hay más, el último suele ser el caudal
-                    if len(numeros) > 1:
-                         # Limpiamos puntos de miles si los hay (ej: 1.200,50)
-                        raw_caudal = numeros[-1].replace('.', '').replace(',', '.')
-                        datos["caudal"] = float(raw_caudal)
-                    
-                    datos["status"] = "success"
-                    encontrado = True
-                    print("✅ ¡DATOS EXTRAÍDOS CORRECTAMENTE!")
-                    break
-        
-        if not encontrado:
-            print("❌ NO se encontró la fila de Ecija/A17.")
-            print("--- MUESTRA DEL HTML DESCARGADO (Primeros 500 cars) ---")
-            print(html[:500])
-            print("-------------------------------------------------------")
+            result = parse_html(content)
+            
+            if result["found"]:
+                final_data["nivel"] = result["level"]
+                final_data["caudal"] = result["flow"]
+                final_data["status"] = "success"
+                final_data["timestamp"] = datetime.now().isoformat()
+                success = True
+                print("Datos extraidos correctamente")
+            else:
+                print("Datos no encontrados en el HTML")
 
-    except Exception as e:
-        print(f"🔥 ERROR FATAL: {str(e)}")
+        except Exception as e:
+            print(f"Excepcion: {e}")
 
-    guardar_json(datos)
+    save_json(final_data)
 
 if __name__ == "__main__":
     main()
