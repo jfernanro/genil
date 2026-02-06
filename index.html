@@ -267,6 +267,93 @@
             font-weight: 700;
         }
 
+        /* --- SLIDER VENTANA TEMPORAL --- */
+        .slider-wrap {
+            margin-top: 12px;
+            padding: 14px 16px;
+            background: rgba(15,23,42,0.5);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .slider-title {
+            font-size: 0.65em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
+
+        .slider-window {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82em;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(59,130,246,0.1);
+            padding: 3px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(59,130,246,0.25);
+        }
+
+        .slider-track {
+            position: relative;
+            width: 100%;
+            padding: 8px 0;
+        }
+
+        .slider-input {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, rgba(59,130,246,0.3), rgba(59,130,246,0.15));
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--bg-base);
+            box-shadow: 0 0 10px rgba(59,130,246,0.5), 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+
+        .slider-input::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 16px rgba(59,130,246,0.7), 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        .slider-input::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--bg-base);
+            box-shadow: 0 0 10px rgba(59,130,246,0.5), 0 2px 6px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            font-size: 0.58em;
+            color: rgba(124,141,181,0.6);
+            letter-spacing: 0.5px;
+        }
+
         .thresholds {
             margin-top: 14px;
             padding: 16px;
@@ -422,6 +509,10 @@
             var UMBRALES = { amarillo: 2.7, naranja: 4.0, rojo: 5.0, critico: 7.0 };
             var REFRESH_MS = 60000;
             var STALE_MINUTES = 30;
+            var INTERVAL_MINUTES = 15;
+            var DEFAULT_WINDOW = 3;
+            var MIN_WINDOW = 2;
+            var MAX_WINDOW = 20;
             var DATA_URL = './datos.json';
             var HISTORICO_URL = './historico.json';
 
@@ -432,10 +523,12 @@
                 status: 'loading',
                 historico: [],
                 refreshing: false,
-                historicoLoaded: false
+                ventana: DEFAULT_WINDOW
             };
 
             var chartInstance = null;
+
+            // --- UTILIDADES ---
 
             function getAlerta(nivel) {
                 if (nivel >= UMBRALES.critico) return { key: 'critico', texto: 'CRITICO' };
@@ -445,19 +538,39 @@
                 return { key: 'verde', texto: 'NORMAL' };
             }
 
-            function getTendencia(hist) {
-                if (hist.length < 3) return { texto: '--', color: 'var(--text-muted)' };
-                var diff = hist[hist.length - 1].nivel - hist[hist.length - 3].nivel;
+            function calcTendencia(hist, ventana) {
+                if (hist.length < ventana + 1) return { texto: '--', color: 'var(--text-muted)' };
+                var actual = hist[hist.length - 1].nivel;
+                var anterior = hist[hist.length - 1 - ventana].nivel;
+                var diff = actual - anterior;
                 if (diff > 0.1)  return { texto: 'Subiendo', color: 'var(--rojo)' };
                 if (diff < -0.1) return { texto: 'Bajando', color: 'var(--verde)' };
                 return { texto: 'Estable', color: 'var(--text-muted)' };
             }
 
-            function getVariacion(hist) {
-                if (hist.length < 2) return '--';
-                var diff = hist[hist.length - 1].nivel - hist[hist.length - 2].nivel;
+            function calcVariacion(hist, ventana) {
+                if (hist.length < ventana + 1) return '--';
+                var actual = hist[hist.length - 1].nivel;
+                var anterior = hist[hist.length - 1 - ventana].nivel;
+                var diff = actual - anterior;
                 var sign = diff >= 0 ? '+' : '';
                 return sign + diff.toFixed(2) + ' m';
+            }
+
+            function formatVentana(lecturas) {
+                var minutos = lecturas * INTERVAL_MINUTES;
+                if (minutos < 60) return minutos + ' min';
+                var h = Math.floor(minutos / 60);
+                var m = minutos % 60;
+                if (m === 0) return h + 'h';
+                return h + 'h ' + m + 'min';
+            }
+
+            function maxVentanaDisponible(hist) {
+                var max = hist.length - 1;
+                if (max < MIN_WINDOW) return MIN_WINDOW;
+                if (max > MAX_WINDOW) return MAX_WINDOW;
+                return max;
             }
 
             function isStale(ts) {
@@ -474,6 +587,8 @@
                 if (!ts) return '--';
                 return new Date(ts).toLocaleString('es-ES');
             }
+
+            // --- FETCH ---
 
             function loadHistorico() {
                 return fetch(HISTORICO_URL + '?t=' + Date.now())
@@ -540,6 +655,33 @@
                     });
             }
 
+            // --- SLIDER (sin re-render completo) ---
+
+            function onSliderChange(e) {
+                var val = parseInt(e.target.value, 10);
+                state.ventana = val;
+
+                var tendencia = calcTendencia(state.historico, val);
+                var variacion = calcVariacion(state.historico, val);
+
+                var elTendencia = document.getElementById('val-tendencia');
+                var elVariacion = document.getElementById('val-variacion');
+                var elWindow = document.getElementById('val-window');
+
+                if (elTendencia) {
+                    elTendencia.textContent = tendencia.texto;
+                    elTendencia.style.color = tendencia.color;
+                }
+                if (elVariacion) {
+                    elVariacion.textContent = variacion;
+                }
+                if (elWindow) {
+                    elWindow.textContent = formatVentana(val);
+                }
+            }
+
+            // --- CHART ---
+
             function updateChart() {
                 var canvas = document.getElementById('chart-canvas');
                 if (!canvas) return;
@@ -605,6 +747,8 @@
                 });
             }
 
+            // --- RENDER ---
+
             function render() {
                 var root = document.getElementById('app');
 
@@ -621,14 +765,19 @@
                     return;
                 }
 
+                var v = state.ventana;
                 var alerta = getAlerta(state.nivel);
-                var tendencia = getTendencia(state.historico);
-                var variacion = getVariacion(state.historico);
+                var tendencia = calcTendencia(state.historico, v);
+                var variacion = calcVariacion(state.historico, v);
                 var stale = isStale(state.timestamp);
                 var badgeClass = state.status === 'error' ? 'error' : '';
+                var maxV = maxVentanaDisponible(state.historico);
+                if (v > maxV) { v = maxV; state.ventana = v; }
+                var sliderDisabled = state.historico.length < MIN_WINDOW + 1;
 
                 var html = '';
 
+                // Header
                 html += '<div class="header">';
                 html += '<h1>Rio Genil - Ecija</h1>';
                 html += '<p class="header-sub">Estacion A17 - SAIH Guadalquivir</p>';
@@ -638,6 +787,7 @@
                 html += '</span>';
                 html += '</div>';
 
+                // Error
                 if (state.status === 'error') {
                     html += '<div class="error-box">';
                     html += '<strong style="font-size:1.1em">Error de conexion</strong>';
@@ -645,6 +795,7 @@
                     html += '</div>';
                 }
 
+                // Nivel principal
                 if (state.status === 'ok') {
                     html += '<div class="card">';
                     html += '<div class="card-glow glow-' + alerta.key + '"></div>';
@@ -660,9 +811,11 @@
                     html += '</div>';
                 }
 
+                // Datos secundarios
                 if (state.status === 'ok') {
                     html += '<div class="card">';
 
+                    // Caudal + ultima lectura
                     html += '<div class="data-grid">';
                     html += '<div class="data-box">';
                     html += '<div class="data-box-label">Caudal</div>';
@@ -677,25 +830,44 @@
                     html += '</div></div>';
                     html += '</div>';
 
+                    // Tendencia + variacion + ventana
                     html += '<div class="extra-row">';
 
                     html += '<div class="extra-item">';
                     html += '<div class="extra-label">Tendencia</div>';
-                    html += '<div class="extra-value" style="color:' + tendencia.color + '">' + tendencia.texto + '</div>';
+                    html += '<div class="extra-value" id="val-tendencia" style="color:' + tendencia.color + '">' + tendencia.texto + '</div>';
                     html += '</div>';
 
                     html += '<div class="extra-item">';
                     html += '<div class="extra-label">Variacion</div>';
-                    html += '<div class="extra-value">' + variacion + '</div>';
+                    html += '<div class="extra-value" id="val-variacion">' + variacion + '</div>';
                     html += '</div>';
 
                     html += '<div class="extra-item">';
-                    html += '<div class="extra-label">Lecturas</div>';
-                    html += '<div class="extra-value">' + state.historico.length + '</div>';
+                    html += '<div class="extra-label">Ventana</div>';
+                    html += '<div class="extra-value" id="val-window">' + formatVentana(v) + '</div>';
                     html += '</div>';
 
                     html += '</div>';
 
+                    // Slider
+                    html += '<div class="slider-wrap">';
+                    html += '<div class="slider-header">';
+                    html += '<span class="slider-title">Ventana de analisis</span>';
+                    html += '<span class="slider-window" id="slider-badge">' + formatVentana(v) + '</span>';
+                    html += '</div>';
+                    html += '<div class="slider-track">';
+                    html += '<input type="range" class="slider-input" id="slider-ventana"';
+                    html += ' min="' + MIN_WINDOW + '" max="' + maxV + '" value="' + v + '"';
+                    html += ' step="1"' + (sliderDisabled ? ' disabled' : '') + '>';
+                    html += '</div>';
+                    html += '<div class="slider-labels">';
+                    html += '<span>' + formatVentana(MIN_WINDOW) + '</span>';
+                    html += '<span>' + formatVentana(maxV) + '</span>';
+                    html += '</div>';
+                    html += '</div>';
+
+                    // Umbrales
                     html += '<div class="thresholds">';
                     html += '<div class="thresholds-title">Umbrales de alerta</div>';
                     html += '<div class="th-row th-verde"><span>Normal</span><strong>&lt; ' + UMBRALES.amarillo + ' m</strong></div>';
@@ -708,6 +880,7 @@
                     html += '</div>';
                 }
 
+                // Chart
                 html += '<div class="card chart-wrap">';
                 html += '<div class="chart-title">Evolucion temporal (ultimas ' + state.historico.length + ' lecturas)</div>';
                 if (state.historico.length > 1) {
@@ -717,10 +890,12 @@
                 }
                 html += '</div>';
 
+                // Boton
                 html += '<button class="btn-refresh" id="btn-refresh"' + (state.refreshing ? ' disabled' : '') + '>';
                 html += state.refreshing ? 'Verificando...' : 'Actualizar datos';
                 html += '</button>';
 
+                // Disclaimer
                 html += '<div class="disclaimer">';
                 html += '<div class="disclaimer-title">Aviso importante</div>';
                 html += 'Esta pagina NO es una fuente oficial. Los datos se obtienen mediante lectura automatizada de la web del SAIH Guadalquivir y pueden contener errores, retrasos o interrupciones sin previo aviso. ';
@@ -728,6 +903,7 @@
                 html += 'El autor no se hace responsable de decisiones tomadas en base a la informacion aqui mostrada.';
                 html += '</div>';
 
+                // Footer
                 html += '<div class="footer">';
                 html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederacion Hidrografica del Guadalquivir</a>';
                 html += '<br>Actualizacion automatica via GitHub Actions cada 15 min';
@@ -735,18 +911,30 @@
 
                 root.innerHTML = html;
 
+                // Bind boton
                 var btn = document.getElementById('btn-refresh');
                 if (btn) {
                     btn.addEventListener('click', fetchData);
                 }
 
+                // Bind slider
+                var slider = document.getElementById('slider-ventana');
+                if (slider) {
+                    slider.addEventListener('input', function (e) {
+                        onSliderChange(e);
+                        var badge = document.getElementById('slider-badge');
+                        if (badge) badge.textContent = formatVentana(parseInt(e.target.value, 10));
+                    });
+                }
+
+                // Chart
                 if (state.historico.length > 1) {
                     chartInstance = null;
                     updateChart();
                 }
             }
 
-            // --- INIT: cargar historico primero, luego datos actuales ---
+            // --- INIT ---
             loadHistorico().then(function (entries) {
                 if (entries.length > 0) {
                     state.historico = entries;
