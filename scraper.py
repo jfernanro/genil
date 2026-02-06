@@ -14,6 +14,8 @@ log = logging.getLogger(__name__)
 
 SAIH_URL = "https://www.chguadalquivir.es/saih/AforosTabla.aspx"
 JSON_FILE = "datos.json"
+HISTORICO_FILE = "historico.json"
+MAX_HISTORICO = 20
 MAX_RETRIES = 2
 TIMEOUT_SECONDS = 20
 
@@ -42,10 +44,18 @@ COL_COTA = 4
 COL_CAUDAL = 6
 
 
-def save_json(data):
-    with open(JSON_FILE, "w", encoding="utf-8") as f:
+def save_json(filepath, data):
+    with open(filepath, "w", encoding="utf-8") as f:
         json.dump(data, f)
-    log.info("Archivo guardado: %s", data)
+    log.info("Guardado %s", filepath)
+
+
+def load_json(filepath, default):
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return default
 
 
 def parse_number(raw):
@@ -163,6 +173,23 @@ def fetch_html(bridge):
     return None
 
 
+def update_historico(entry):
+    historico = load_json(HISTORICO_FILE, [])
+
+    last = historico[-1] if historico else None
+    if last and last.get("timestamp") == entry["timestamp"]:
+        log.info("Timestamp duplicado, no se anade al historico")
+        return
+
+    historico.append(entry)
+
+    if len(historico) > MAX_HISTORICO:
+        historico = historico[-MAX_HISTORICO:]
+
+    save_json(HISTORICO_FILE, historico)
+    log.info("Historico actualizado: %d lecturas", len(historico))
+
+
 def main():
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -191,12 +218,19 @@ def main():
             "status": "success"
         }
 
-        save_json(final_data)
+        save_json(JSON_FILE, final_data)
+
+        update_historico({
+            "nivel": result["nivel"],
+            "caudal": result["caudal"],
+            "timestamp": now
+        })
+
         log.info("Extraccion completada correctamente")
         return
 
     log.error("Todos los puentes fallaron. Se guarda estado de error.")
-    save_json(error_data)
+    save_json(JSON_FILE, error_data)
 
 
 if __name__ == "__main__":

@@ -4,888 +4,730 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor Rio Genil - Ecija</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-base: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --border-card: rgba(51, 65, 85, 0.6);
+            --text-main: #f1f5f9;
+            --text-muted: #7c8db5;
+            --accent: #3b82f6;
+            --verde: #22c55e;
+            --amarillo: #eab308;
+            --naranja: #f97316;
+            --rojo: #ef4444;
+            --critico: #991b1b;
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-base);
             min-height: 100vh;
-            padding: 10px;
+            color: var(--text-main);
+            padding: 12px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% -20%, rgba(59,130,246,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 50% 40% at 80% 100%, rgba(59,130,246,0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 520px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .header {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-            margin-bottom: 15px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: 22px 16px 18px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            border-radius: 16px;
+            margin-bottom: 14px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 8px 30px rgba(37,99,235,0.25);
         }
 
         .header h1 {
-            color: white;
-            font-size: 2em;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-size: 1.6em;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: #fff;
         }
 
-        .header p {
-            color: rgba(255,255,255,0.9);
-            font-size: 0.9em;
+        .header-sub {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.82em;
+            margin-top: 2px;
             letter-spacing: 1px;
         }
 
-        .status-badge {
+        .live-badge {
             display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.75em;
             margin-top: 10px;
-            font-weight: bold;
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            border: 1px solid #22c55e;
-            animation: pulse-badge 2s infinite;
-        }
-
-        @keyframes pulse-badge {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .nivel-principal {
-            background: white;
+            padding: 4px 14px;
             border-radius: 20px;
-            padding: 45px 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            margin-bottom: 15px;
+            font-size: 0.7em;
+            font-weight: 700;
+            background: rgba(34,197,94,0.15);
+            color: var(--verde);
+            border: 1px solid var(--verde);
+            letter-spacing: 1.5px;
+        }
+
+        .live-badge.error {
+            background: rgba(239,68,68,0.15);
+            color: var(--rojo);
+            border-color: var(--rojo);
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--verde);
+            margin-right: 5px;
+            animation: blink 2s infinite;
+        }
+
+        .live-badge.error .live-dot {
+            background: var(--rojo);
+            animation: none;
+        }
+
+        @keyframes blink {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 18px;
+            padding: 28px 18px;
+            margin-bottom: 14px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3);
             text-align: center;
-            border: 3px solid;
             position: relative;
             overflow: hidden;
         }
 
-        .nivel-principal::before {
-            content: '';
+        .card-glow {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 8px;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 18px 18px 0 0;
         }
 
-        .nivel-verde {
-            border-color: #22c55e;
-        }
-        .nivel-verde::before {
-            background: linear-gradient(90deg, #22c55e, #16a34a);
-        }
+        .glow-verde   { background: var(--verde); box-shadow: 0 0 20px var(--verde); }
+        .glow-amarillo { background: var(--amarillo); box-shadow: 0 0 20px var(--amarillo); }
+        .glow-naranja  { background: var(--naranja); box-shadow: 0 0 25px var(--naranja); }
+        .glow-rojo     { background: var(--rojo); box-shadow: 0 0 30px var(--rojo); }
+        .glow-critico  { background: var(--critico); box-shadow: 0 0 40px var(--critico); animation: pulse-glow 1.2s infinite; }
 
-        .nivel-amarillo {
-            border-color: #eab308;
-            animation: glow-amarillo 2s ease-in-out infinite;
-        }
-        .nivel-amarillo::before {
-            background: linear-gradient(90deg, #eab308, #f59e0b);
-        }
-
-        .nivel-naranja {
-            border-color: #f97316;
-            animation: glow-naranja 2s ease-in-out infinite;
-        }
-        .nivel-naranja::before {
-            background: linear-gradient(90deg, #f97316, #ea580c);
-        }
-
-        .nivel-rojo {
-            border-color: #ef4444;
-            animation: glow-rojo 1.5s ease-in-out infinite;
-        }
-        .nivel-rojo::before {
-            background: linear-gradient(90deg, #ef4444, #dc2626);
-        }
-
-        .nivel-critico {
-            border-color: #991b1b;
-            animation: glow-critico 1s ease-in-out infinite;
-            box-shadow: 0 0 30px rgba(153, 27, 27, 0.5);
-        }
-        .nivel-critico::before {
-            background: linear-gradient(90deg, #991b1b, #7f1d1d);
-        }
-
-        @keyframes glow-amarillo {
-            0%, 100% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 20px rgba(234, 179, 8, 0.3); }
-            50% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 40px rgba(234, 179, 8, 0.6); }
-        }
-
-        @keyframes glow-naranja {
-            0%, 100% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 25px rgba(249, 115, 22, 0.4); }
-            50% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 50px rgba(249, 115, 22, 0.7); }
-        }
-
-        @keyframes glow-rojo {
-            0%, 100% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 30px rgba(239, 68, 68, 0.5); }
-            50% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 60px rgba(239, 68, 68, 0.8); }
-        }
-
-        @keyframes glow-critico {
-            0%, 100% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 40px rgba(153, 27, 27, 0.7); }
-            50% { box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 80px rgba(153, 27, 27, 1); }
-        }
-
-        .nivel-valor {
-            font-size: 7em;
-            font-weight: 900;
-            line-height: 1;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.15);
-        }
-
-        .color-verde { color: #22c55e; }
-        .color-amarillo { color: #eab308; }
-        .color-naranja { color: #f97316; }
-        .color-rojo { color: #ef4444; }
-        .color-critico { 
-            color: #991b1b; 
-            animation: pulse-text 1s infinite;
-        }
-
-        @keyframes pulse-text {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .nivel-unidad {
-            font-size: 2.5em;
-            color: #64748b;
-            margin-left: 10px;
-            font-weight: 600;
+        @keyframes pulse-glow {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .nivel-label {
-            font-size: 1.2em;
-            color: #475569;
-            margin-top: 15px;
+            font-size: 0.75em;
             text-transform: uppercase;
             letter-spacing: 3px;
-            font-weight: 600;
-        }
-
-        .alert-indicator {
-            display: inline-block;
-            padding: 14px 40px;
-            border-radius: 35px;
-            font-weight: bold;
-            font-size: 1.3em;
-            margin-top: 25px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.25);
-        }
-
-        .alert-verde {
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            color: white;
-        }
-
-        .alert-amarillo {
-            background: linear-gradient(135deg, #eab308, #f59e0b);
-            color: white;
-        }
-
-        .alert-naranja {
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            color: white;
-        }
-
-        .alert-rojo {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            animation: pulse-alert 2s infinite;
-        }
-
-        .alert-critico {
-            background: linear-gradient(135deg, #991b1b, #7f1d1d);
-            color: white;
-            animation: pulse-alert 1s infinite;
-            box-shadow: 0 0 30px rgba(153, 27, 27, 0.6);
-        }
-
-        @keyframes pulse-alert {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-
-        .datos-secundarios {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-            margin-bottom: 15px;
-        }
-
-        .datos-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 15px 0;
-        }
-
-        .dato-item {
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #cbd5e1;
-            transition: transform 0.2s;
-        }
-
-        .dato-item:hover {
-            transform: translateY(-3px);
-        }
-
-        .dato-label {
-            color: #64748b;
-            font-size: 0.85em;
-            margin-bottom: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .dato-value {
-            color: #1e293b;
-            font-size: 1.8em;
-            font-weight: bold;
-        }
-
-        .dato-unit {
-            font-size: 0.6em;
-            color: #64748b;
-            margin-left: 4px;
-        }
-
-        .dato-no-disponible {
-            color: #94a3b8;
-            font-style: italic;
-            font-size: 1.2em;
-        }
-
-        .datos-extra {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .dato-extra {
-            background: #f8fafc;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-        }
-
-        .dato-extra-label {
-            font-size: 0.7em;
-            color: #64748b;
+            color: var(--text-muted);
             margin-bottom: 6px;
+        }
+
+        .nivel-valor {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 5.5em;
+            font-weight: 700;
+            line-height: 1;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .nivel-unidad {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.3em;
+            color: var(--text-muted);
+            margin-left: 4px;
+            font-weight: 600;
+            vertical-align: super;
+        }
+
+        .c-verde   { color: var(--verde); }
+        .c-amarillo { color: var(--amarillo); }
+        .c-naranja  { color: var(--naranja); }
+        .c-rojo     { color: var(--rojo); }
+        .c-critico  { color: var(--critico); animation: pulse-text 1s infinite; }
+
+        @keyframes pulse-text {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
+        .alert-pill {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 10px 32px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .pill-verde   { background: rgba(34,197,94,0.15); color: var(--verde); border: 1px solid rgba(34,197,94,0.4); }
+        .pill-amarillo { background: rgba(234,179,8,0.15); color: var(--amarillo); border: 1px solid rgba(234,179,8,0.4); }
+        .pill-naranja  { background: rgba(249,115,22,0.15); color: var(--naranja); border: 1px solid rgba(249,115,22,0.4); }
+        .pill-rojo     { background: rgba(239,68,68,0.15); color: var(--rojo); border: 1px solid rgba(239,68,68,0.4); animation: pulse-pill 2s infinite; }
+        .pill-critico  { background: rgba(153,27,27,0.2); color: #fca5a5; border: 1px solid rgba(153,27,27,0.6); animation: pulse-pill 1s infinite; }
+
+        @keyframes pulse-pill {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .data-box {
+            background: rgba(15,23,42,0.6);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+
+        .data-box-label {
+            font-size: 0.68em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .data-box-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .data-box-unit {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.55em;
+            color: var(--text-muted);
+            margin-left: 2px;
+        }
+
+        .extra-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .extra-item {
+            background: rgba(15,23,42,0.4);
+            border: 1px solid rgba(51,65,85,0.4);
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+        }
+
+        .extra-label {
+            font-size: 0.6em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
         }
 
-        .dato-extra-value {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #1e293b;
+        .extra-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+            font-weight: 700;
         }
 
         .thresholds {
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-            padding: 18px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 2px solid #cbd5e1;
+            margin-top: 14px;
+            padding: 16px;
+            background: rgba(15,23,42,0.5);
+            border: 1px solid var(--border-card);
+            border-radius: 14px;
         }
 
-        .threshold-title {
-            color: #1e293b;
-            font-weight: bold;
-            margin-bottom: 12px;
-            font-size: 1em;
+        .thresholds-title {
+            font-size: 0.7em;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
         }
 
-        .threshold-item {
+        .th-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 12px;
-            margin: 8px 0;
+            padding: 7px 10px;
+            margin: 4px 0;
             border-radius: 8px;
-            font-size: 0.9em;
+            font-size: 0.82em;
         }
 
-        .threshold-verde {
-            background: rgba(34, 197, 94, 0.1);
-            border-left: 4px solid #22c55e;
-        }
+        .th-verde   { background: rgba(34,197,94,0.08); border-left: 3px solid var(--verde); }
+        .th-amarillo { background: rgba(234,179,8,0.08); border-left: 3px solid var(--amarillo); }
+        .th-naranja  { background: rgba(249,115,22,0.08); border-left: 3px solid var(--naranja); }
+        .th-rojo     { background: rgba(239,68,68,0.08); border-left: 3px solid var(--rojo); }
+        .th-critico  { background: rgba(153,27,27,0.08); border-left: 3px solid var(--critico); }
 
-        .threshold-amarillo {
-            background: rgba(234, 179, 8, 0.1);
-            border-left: 4px solid #eab308;
-        }
+        .th-row span:first-child { font-weight: 600; }
+        .th-row strong { font-family: 'JetBrains Mono', monospace; font-size: 0.9em; }
 
-        .threshold-naranja {
-            background: rgba(249, 115, 22, 0.1);
-            border-left: 4px solid #f97316;
-        }
-
-        .threshold-rojo {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 4px solid #ef4444;
-        }
-
-        .threshold-critico {
-            background: rgba(153, 27, 27, 0.1);
-            border-left: 4px solid #991b1b;
-        }
-
-        .chart-container {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
-            margin-bottom: 15px;
-        }
+        .chart-wrap { padding: 18px; }
 
         .chart-title {
-            color: #1e293b;
-            font-size: 1.2em;
-            margin-bottom: 18px;
-            font-weight: 700;
+            font-size: 0.7em;
             text-transform: uppercase;
             letter-spacing: 2px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
         }
 
-        .update-info {
-            background: rgba(255,255,255,0.95);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        .chart-empty {
             text-align: center;
-            color: #64748b;
-            font-size: 0.9em;
+            color: var(--text-muted);
+            font-size: 0.82em;
+            padding: 30px 0;
         }
 
-        .refresh-btn {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
+        canvas { max-height: 220px; }
+
+        .btn-refresh {
+            display: block;
+            width: 100%;
+            padding: 14px;
             border: none;
-            padding: 12px 30px;
-            border-radius: 30px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95em;
+            font-weight: 700;
             cursor: pointer;
-            font-size: 1em;
-            margin-top: 12px;
-            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
-            font-weight: 600;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+            margin-top: 14px;
         }
 
-        .refresh-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.6);
-        }
+        .btn-refresh:hover { filter: brightness(1.15); transform: translateY(-1px); }
+        .btn-refresh:disabled { background: #334155; color: #64748b; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        .refresh-btn:active {
-            transform: translateY(0);
-        }
-
-        .refresh-btn:disabled {
-            background: linear-gradient(135deg, #94a3b8, #64748b);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .loading {
+        .footer {
             text-align: center;
-            padding: 60px;
-            color: white;
-            font-size: 1.6em;
+            margin-top: 16px;
+            padding: 14px;
+            font-size: 0.72em;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(51,65,85,0.3);
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .loading-screen {
+            text-align: center;
+            padding: 80px 20px;
         }
 
         .spinner {
-            border: 5px solid rgba(255,255,255,0.3);
-            border-top: 5px solid white;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(59,130,246,0.2);
+            border-top-color: var(--accent);
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 25px auto;
+            animation: spin 0.8s linear infinite;
+            margin: 20px auto;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 8px 16px rgba(239, 68, 68, 0.4);
-        }
-
-        .footer {
-            background: rgba(255,255,255,0.9);
-            padding: 15px;
-            border-radius: 15px;
+        .error-box {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 14px;
+            padding: 24px;
             text-align: center;
-            color: #64748b;
-            font-size: 0.8em;
-            margin-top: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            margin-bottom: 14px;
+        }
+
+        .error-box p { color: var(--text-muted); font-size: 0.85em; margin-top: 8px; }
+
+        .dato-stale {
+            color: var(--amarillo);
+            font-size: 0.72em;
+            margin-top: 6px;
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div class="container" id="app"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+    <script>
+        (function () {
+            'use strict';
 
-        const MonitorGenil = () => {
-            const [datos, setDatos] = useState(null);
-            const [loading, setLoading] = useState(true);
-            const [error, setError] = useState(null);
-            const [historico, setHistorico] = useState([]);
-            const [refreshing, setRefreshing] = useState(false);
-            const chartRef = useRef(null);
-            const chartInstance = useRef(null);
+            var UMBRALES = { amarillo: 2.7, naranja: 4.0, rojo: 5.0, critico: 7.0 };
+            var REFRESH_MS = 60000;
+            var STALE_MINUTES = 30;
+            var DATA_URL = './datos.json';
+            var HISTORICO_URL = './historico.json';
 
-            const UMBRALES = {
-                amarillo: 2.7,
-                naranja: 4.0,
-                rojo: 5.0,
-                critico: 7.0
+            var state = {
+                nivel: 0,
+                caudal: 0,
+                timestamp: null,
+                status: 'loading',
+                historico: [],
+                refreshing: false,
+                historicoLoaded: false
             };
 
-            const PROXIES = [
-                'https://api.codetabs.com/v1/proxy?quest=',
-                'https://corsproxy.io/?',
-                'https://api.allorigins.win/raw?url='
-            ];
+            var chartInstance = null;
 
-            const SAIH_URL = 'https://www.chguadalquivir.es/saih/AforosTabla.aspx';
+            function getAlerta(nivel) {
+                if (nivel >= UMBRALES.critico) return { key: 'critico', texto: 'CRITICO' };
+                if (nivel >= UMBRALES.rojo)    return { key: 'rojo', texto: 'EMERGENCIA' };
+                if (nivel >= UMBRALES.naranja)  return { key: 'naranja', texto: 'ALERTA' };
+                if (nivel >= UMBRALES.amarillo) return { key: 'amarillo', texto: 'PRECAUCION' };
+                return { key: 'verde', texto: 'NORMAL' };
+            }
 
-            const obtenerDatosSAIH = async () => {
-                for (let i = 0; i < PROXIES.length; i++) {
-                    try {
-                        const url = PROXIES[i] + encodeURIComponent(SAIH_URL);
-                        const response = await fetch(url);
-                        
-                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                        
-                        const html = await response.text();
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        
-                        const tablas = doc.querySelectorAll('table');
-                        
-                        for (let tabla of tablas) {
-                            const filas = tabla.querySelectorAll('tr');
-                            
-                            for (let fila of filas) {
-                                const texto = fila.textContent.toUpperCase();
-                                
-                                if ((texto.includes('ECIJA') || texto.includes('A17')) && texto.includes('GENIL')) {
-                                    const celdas = fila.querySelectorAll('td');
-                                    
-                                    console.log('=== FILA ECIJA ENCONTRADA ===');
-                                    console.log('Numero total de celdas:', celdas.length);
-                                    
-                                    // Mostrar todas las celdas para debug
-                                    celdas.forEach((celda, idx) => {
-                                        console.log(`Celda ${idx}:`, celda.textContent.trim());
-                                    });
-                                    
-                                    if (celdas.length >= 7) {
-                                        // Columna 3: Calado (nivel) en m.l.a
-                                        const valorNivel = celdas[2].textContent.trim(); // índice 2 = columna 3
-                                        const nivel = parseFloat(valorNivel.replace(',', '.'));
-                                        
-                                        // Columna 7: Caudal en m³/s
-                                        const valorCaudal = celdas[6].textContent.trim(); // índice 6 = columna 7
-                                        const caudalLimpio = valorCaudal.replace(/[^\d,.-]/g, '');
-                                        const caudal = parseFloat(caudalLimpio.replace(',', '.'));
-                                        
-                                        // Columna 5: Cota (opcional, para referencia)
-                                        const valorCota = celdas[4].textContent.trim(); // índice 4 = columna 5
-                                        const cota = parseFloat(valorCota.replace(',', '.'));
-                                        
-                                        console.log('Nivel extraído (columna 3):', nivel);
-                                        console.log('Caudal extraído (columna 7):', caudal);
-                                        console.log('Cota extraída (columna 5):', cota);
-                                        
-                                        // Validar nivel
-                                        if (!isNaN(nivel) && nivel >= 0 && nivel <= 15) {
-                                            return {
-                                                nivel: nivel,
-                                                caudal: (!isNaN(caudal) && caudal >= 0 && caudal < 5000) ? caudal : null,
-                                                cota: (!isNaN(cota)) ? cota : null,
-                                                timestamp: new Date().toISOString(),
-                                                estacion: 'A17',
-                                                fuente: 'SAIH',
-                                                proxyUsado: i + 1,
-                                                ultimaActualizacion: new Date().toLocaleTimeString('es-ES')
-                                            };
-                                        } else {
-                                            console.error('Nivel invalido:', nivel);
-                                        }
-                                    } else {
-                                        console.warn('La fila no tiene suficientes columnas:', celdas.length);
-                                    }
-                                }
-                            }
+            function getTendencia(hist) {
+                if (hist.length < 3) return { texto: '--', color: 'var(--text-muted)' };
+                var diff = hist[hist.length - 1].nivel - hist[hist.length - 3].nivel;
+                if (diff > 0.1)  return { texto: 'Subiendo', color: 'var(--rojo)' };
+                if (diff < -0.1) return { texto: 'Bajando', color: 'var(--verde)' };
+                return { texto: 'Estable', color: 'var(--text-muted)' };
+            }
+
+            function getVariacion(hist) {
+                if (hist.length < 2) return '--';
+                var diff = hist[hist.length - 1].nivel - hist[hist.length - 2].nivel;
+                var sign = diff >= 0 ? '+' : '';
+                return sign + diff.toFixed(2) + ' m';
+            }
+
+            function isStale(ts) {
+                if (!ts) return false;
+                return (Date.now() - new Date(ts).getTime()) / 60000 > STALE_MINUTES;
+            }
+
+            function formatTime(ts) {
+                if (!ts) return '--:--';
+                return new Date(ts).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            function formatDateTime(ts) {
+                if (!ts) return '--';
+                return new Date(ts).toLocaleString('es-ES');
+            }
+
+            function loadHistorico() {
+                return fetch(HISTORICO_URL + '?t=' + Date.now())
+                    .then(function (res) {
+                        if (!res.ok) return [];
+                        return res.json();
+                    })
+                    .then(function (arr) {
+                        if (!Array.isArray(arr)) return [];
+                        return arr.map(function (e) {
+                            return {
+                                label: formatTime(e.timestamp),
+                                nivel: e.nivel,
+                                caudal: e.caudal,
+                                timestamp: e.timestamp
+                            };
+                        });
+                    })
+                    .catch(function () { return []; });
+            }
+
+            function fetchData() {
+                state.refreshing = true;
+                render();
+
+                fetch(DATA_URL + '?t=' + Date.now())
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        return res.json();
+                    })
+                    .then(function (json) {
+                        if (json.status === 'error') {
+                            state.status = 'error';
+                            state.refreshing = false;
+                            render();
+                            return;
                         }
-                        
-                        throw new Error('No se encontraron datos de Ecija');
-                        
-                    } catch (err) {
-                        console.warn(`Proxy ${i + 1} fallo:`, err.message);
-                        if (i === PROXIES.length - 1) throw err;
-                        continue;
-                    }
-                }
-            };
 
-            const obtenerEstadoAlerta = (nivel) => {
-                if (nivel >= UMBRALES.critico) return { 
-                    clase: 'critico', 
-                    texto: 'NIVEL CRITICO',
-                    color: 'critico'
-                };
-                if (nivel >= UMBRALES.rojo) return { 
-                    clase: 'rojo', 
-                    texto: 'EMERGENCIA',
-                    color: 'rojo'
-                };
-                if (nivel >= UMBRALES.naranja) return { 
-                    clase: 'naranja', 
-                    texto: 'ALERTA',
-                    color: 'naranja'
-                };
-                if (nivel >= UMBRALES.amarillo) return { 
-                    clase: 'amarillo', 
-                    texto: 'PRECAUCION',
-                    color: 'amarillo'
-                };
-                return { 
-                    clase: 'verde', 
-                    texto: 'NORMAL',
-                    color: 'verde'
-                };
-            };
+                        state.nivel = json.nivel;
+                        state.caudal = json.caudal;
+                        state.timestamp = json.timestamp;
+                        state.status = 'ok';
+                        state.refreshing = false;
 
-            const calcularTendencia = () => {
-                if (historico.length < 3) return 'Estable';
-                const ultimos3 = historico.slice(-3).map(h => h.nivel);
-                const diff = ultimos3[2] - ultimos3[0];
-                
-                if (diff > 0.1) return 'Subiendo';
-                if (diff < -0.1) return 'Bajando';
-                return 'Estable';
-            };
+                        var timeLabel = formatTime(json.timestamp);
+                        var last = state.historico[state.historico.length - 1];
 
-            const calcularVariacion = () => {
-                if (historico.length < 2) return null;
-                const anterior = historico[historico.length - 2].nivel;
-                const actual = historico[historico.length - 1].nivel;
-                const diff = actual - anterior;
-                return diff > 0 ? `+${diff.toFixed(2)}` : diff.toFixed(2);
-            };
+                        if (!last || last.timestamp !== json.timestamp) {
+                            state.historico.push({
+                                label: timeLabel,
+                                nivel: json.nivel,
+                                caudal: json.caudal,
+                                timestamp: json.timestamp
+                            });
+                        }
 
-            const cargarDatos = async () => {
-                try {
-                    setRefreshing(true);
-                    const nuevosDatos = await obtenerDatosSAIH();
-                    setDatos(nuevosDatos);
-                    setError(null);
-
-                    setHistorico(prev => {
-                        const nuevo = [...prev, {
-                            tiempo: new Date().toLocaleTimeString('es-ES', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                            }),
-                            nivel: nuevosDatos.nivel,
-                            caudal: nuevosDatos.caudal
-                        }];
-                        return nuevo.slice(-20);
+                        render();
+                        updateChart();
+                    })
+                    .catch(function () {
+                        state.status = 'error';
+                        state.refreshing = false;
+                        render();
                     });
-                } catch (err) {
-                    setError(err.message);
-                } finally {
-                    setLoading(false);
-                    setRefreshing(false);
+            }
+
+            function updateChart() {
+                var canvas = document.getElementById('chart-canvas');
+                if (!canvas) return;
+                var ctx = canvas.getContext('2d');
+
+                var labels = state.historico.map(function (h) { return h.label; });
+                var data = state.historico.map(function (h) { return h.nivel; });
+
+                if (chartInstance) {
+                    chartInstance.data.labels = labels;
+                    chartInstance.data.datasets[0].data = data;
+                    chartInstance.update();
+                    return;
                 }
-            };
 
-            useEffect(() => {
-                cargarDatos();
-                const interval = setInterval(cargarDatos, 180000);
-                return () => clearInterval(interval);
-            }, []);
-
-            useEffect(() => {
-                if (historico.length > 1 && chartRef.current) {
-                    if (chartInstance.current) {
-                        chartInstance.current.destroy();
-                    }
-
-                    const ctx = chartRef.current.getContext('2d');
-                    chartInstance.current = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: historico.map(h => h.tiempo),
-                            datasets: [{
-                                label: 'Nivel (m)',
-                                data: historico.map(h => h.nivel),
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                                borderWidth: 3,
-                                tension: 0.4,
-                                fill: true,
-                                pointRadius: 5,
-                                pointBackgroundColor: '#3b82f6',
-                                pointBorderColor: '#fff',
-                                pointBorderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                                    padding: 12,
-                                    titleFont: { size: 13 },
-                                    bodyFont: { size: 12 }
-                                }
+                chartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Nivel (m)',
+                            data: data,
+                            borderColor: '#3b82f6',
+                            backgroundColor: function (context) {
+                                var g = context.chart.ctx.createLinearGradient(0, 0, 0, 220);
+                                g.addColorStop(0, 'rgba(59,130,246,0.35)');
+                                g.addColorStop(1, 'rgba(59,130,246,0.0)');
+                                return g;
                             },
-                            scales: {
-                                y: {
-                                    beginAtZero: false,
-                                    ticks: { 
-                                        font: { size: 12, weight: '600' },
-                                        color: '#475569'
-                                    },
-                                    grid: { color: '#e2e8f0' }
-                                },
-                                x: {
-                                    ticks: { 
-                                        font: { size: 11 },
-                                        color: '#64748b'
-                                    },
-                                    grid: { color: '#f1f5f9' }
-                                }
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#3b82f6',
+                            pointBorderColor: '#0f172a',
+                            pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: 'rgba(15,23,42,0.9)',
+                                titleFont: { family: 'Outfit', size: 12 },
+                                bodyFont: { family: 'JetBrains Mono', size: 12 },
+                                padding: 10,
+                                cornerRadius: 8
+                            }
+                        },
+                        scales: {
+                            y: {
+                                grid: { color: 'rgba(51,65,85,0.3)' },
+                                ticks: { color: '#7c8db5', font: { family: 'JetBrains Mono', size: 11 } }
+                            },
+                            x: {
+                                grid: { color: 'rgba(51,65,85,0.15)' },
+                                ticks: { color: '#7c8db5', font: { family: 'Outfit', size: 10 } }
                             }
                         }
-                    });
+                    }
+                });
+            }
+
+            function render() {
+                var root = document.getElementById('app');
+
+                if (state.status === 'loading') {
+                    root.innerHTML =
+                        '<div class="header">' +
+                            '<h1>Rio Genil - Ecija</h1>' +
+                            '<p class="header-sub">Estacion A17 - SAIH Guadalquivir</p>' +
+                        '</div>' +
+                        '<div class="loading-screen">' +
+                            '<div class="spinner"></div>' +
+                            '<div style="color:var(--text-muted)">Cargando datos...</div>' +
+                        '</div>';
+                    return;
                 }
-            }, [historico]);
 
-            if (loading) {
-                return (
-                    <div className="loading">
-                        <div>Conectando con SAIH...</div>
-                        <div className="spinner"></div>
-                    </div>
-                );
+                var alerta = getAlerta(state.nivel);
+                var tendencia = getTendencia(state.historico);
+                var variacion = getVariacion(state.historico);
+                var stale = isStale(state.timestamp);
+                var badgeClass = state.status === 'error' ? 'error' : '';
+
+                var html = '';
+
+                html += '<div class="header">';
+                html += '<h1>Rio Genil - Ecija</h1>';
+                html += '<p class="header-sub">Estacion A17 - SAIH Guadalquivir</p>';
+                html += '<span class="live-badge ' + badgeClass + '">';
+                html += '<span class="live-dot"></span>';
+                html += (state.status === 'error' ? 'SIN DATOS' : 'EN VIVO');
+                html += '</span>';
+                html += '</div>';
+
+                if (state.status === 'error') {
+                    html += '<div class="error-box">';
+                    html += '<strong style="font-size:1.1em">Error de conexion</strong>';
+                    html += '<p>No se pudieron obtener los datos del SAIH. El scraper puede estar caido o el archivo datos.json no esta disponible.</p>';
+                    html += '</div>';
+                }
+
+                if (state.status === 'ok') {
+                    html += '<div class="card">';
+                    html += '<div class="card-glow glow-' + alerta.key + '"></div>';
+                    html += '<div class="nivel-label">Altura del agua</div>';
+                    html += '<div class="nivel-valor c-' + alerta.key + '">';
+                    html += state.nivel.toFixed(2);
+                    html += '<span class="nivel-unidad">m</span>';
+                    html += '</div>';
+                    html += '<div class="alert-pill pill-' + alerta.key + '">' + alerta.texto + '</div>';
+                    if (stale) {
+                        html += '<div class="dato-stale">Dato antiguo - ultima lectura: ' + formatDateTime(state.timestamp) + '</div>';
+                    }
+                    html += '</div>';
+                }
+
+                if (state.status === 'ok') {
+                    html += '<div class="card">';
+
+                    html += '<div class="data-grid">';
+                    html += '<div class="data-box">';
+                    html += '<div class="data-box-label">Caudal</div>';
+                    html += '<div class="data-box-value" style="color:#60a5fa">';
+                    html += (state.caudal > 0 ? state.caudal.toFixed(1) + '<span class="data-box-unit">m3/s</span>' : '<span style="color:var(--text-muted);font-size:0.7em">No disponible</span>');
+                    html += '</div></div>';
+
+                    html += '<div class="data-box">';
+                    html += '<div class="data-box-label">Ultima lectura</div>';
+                    html += '<div class="data-box-value" style="font-size:1.1em">';
+                    html += formatDateTime(state.timestamp);
+                    html += '</div></div>';
+                    html += '</div>';
+
+                    html += '<div class="extra-row">';
+
+                    html += '<div class="extra-item">';
+                    html += '<div class="extra-label">Tendencia</div>';
+                    html += '<div class="extra-value" style="color:' + tendencia.color + '">' + tendencia.texto + '</div>';
+                    html += '</div>';
+
+                    html += '<div class="extra-item">';
+                    html += '<div class="extra-label">Variacion</div>';
+                    html += '<div class="extra-value">' + variacion + '</div>';
+                    html += '</div>';
+
+                    html += '<div class="extra-item">';
+                    html += '<div class="extra-label">Lecturas</div>';
+                    html += '<div class="extra-value">' + state.historico.length + '</div>';
+                    html += '</div>';
+
+                    html += '</div>';
+
+                    html += '<div class="thresholds">';
+                    html += '<div class="thresholds-title">Umbrales de alerta</div>';
+                    html += '<div class="th-row th-verde"><span>Normal</span><strong>&lt; ' + UMBRALES.amarillo + ' m</strong></div>';
+                    html += '<div class="th-row th-amarillo"><span>Precaucion</span><strong>' + UMBRALES.amarillo + ' - ' + UMBRALES.naranja + ' m</strong></div>';
+                    html += '<div class="th-row th-naranja"><span>Alerta</span><strong>' + UMBRALES.naranja + ' - ' + UMBRALES.rojo + ' m</strong></div>';
+                    html += '<div class="th-row th-rojo"><span>Emergencia</span><strong>' + UMBRALES.rojo + ' - ' + UMBRALES.critico + ' m</strong></div>';
+                    html += '<div class="th-row th-critico"><span>Critico</span><strong>&gt; ' + UMBRALES.critico + ' m</strong></div>';
+                    html += '</div>';
+
+                    html += '</div>';
+                }
+
+                html += '<div class="card chart-wrap">';
+                html += '<div class="chart-title">Evolucion temporal (ultimas ' + state.historico.length + ' lecturas)</div>';
+                if (state.historico.length > 1) {
+                    html += '<div style="height:220px"><canvas id="chart-canvas"></canvas></div>';
+                } else {
+                    html += '<div class="chart-empty">Esperando mas lecturas para mostrar la grafica...</div>';
+                }
+                html += '</div>';
+
+                html += '<button class="btn-refresh" id="btn-refresh"' + (state.refreshing ? ' disabled' : '') + '>';
+                html += state.refreshing ? 'Verificando...' : 'Actualizar datos';
+                html += '</button>';
+
+                html += '<div class="footer">';
+                html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederacion Hidrografica del Guadalquivir</a>';
+                html += '<br>Actualizacion automatica via GitHub Actions cada 15 min';
+                html += '</div>';
+
+                root.innerHTML = html;
+
+                var btn = document.getElementById('btn-refresh');
+                if (btn) {
+                    btn.addEventListener('click', fetchData);
+                }
+
+                if (state.historico.length > 1) {
+                    chartInstance = null;
+                    updateChart();
+                }
             }
 
-            if (error) {
-                return (
-                    <div className="container">
-                        <div className="header">
-                            <h1>Monitor Rio Genil</h1>
-                            <p>Ecija - Estacion A17</p>
-                        </div>
-                        <div className="error">
-                            <h3 style={{marginBottom: '10px', fontSize: '1.4em'}}>Error de Conexion</h3>
-                            <p style={{fontSize: '1em', marginBottom: '15px'}}>{error}</p>
-                            <button className="refresh-btn" onClick={cargarDatos}>
-                                Reintentar Conexion
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
+            // --- INIT: cargar historico primero, luego datos actuales ---
+            loadHistorico().then(function (entries) {
+                if (entries.length > 0) {
+                    state.historico = entries;
+                }
+                fetchData();
+                setInterval(fetchData, REFRESH_MS);
+            });
 
-            const alerta = obtenerEstadoAlerta(datos.nivel);
-            const tendencia = calcularTendencia();
-            const variacion = calcularVariacion();
-
-            return (
-                <div className="container">
-                    <div className="header">
-                        <h1>Rio Genil - Ecija</h1>
-                        <p>Estacion A17 - SAIH Guadalquivir</p>
-                        <span className="status-badge">● EN VIVO</span>
-                    </div>
-
-                    <div className={`nivel-principal nivel-${alerta.clase}`}>
-                        <div>
-                            <span className={`nivel-valor color-${alerta.color}`}>
-                                {datos.nivel.toFixed(2)}
-                            </span>
-                            <span className="nivel-unidad">m</span>
-                        </div>
-                        <div className="nivel-label">Altura del Agua</div>
-                        <div className={`alert-indicator alert-${alerta.clase}`}>
-                            {alerta.texto}
-                        </div>
-                    </div>
-
-                    <div className="datos-secundarios">
-                        <div className="datos-grid">
-                            <div className="dato-item">
-                                <div className="dato-label">Caudal</div>
-                                <div className="dato-value">
-                                    {datos.caudal !== null ? (
-                                        <>{datos.caudal.toFixed(1)}<span className="dato-unit">m³/s</span></>
-                                    ) : (
-                                        <span className="dato-no-disponible">No disponible</span>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="dato-item">
-                                <div className="dato-label">Cota</div>
-                                <div className="dato-value">
-                                    {datos.cota !== null && datos.cota !== undefined ? (
-                                        <>{datos.cota.toFixed(2)}<span className="dato-unit">m.s.n.m</span></>
-                                    ) : (
-                                        <span className="dato-no-disponible">--</span>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="datos-grid" style={{marginTop: '10px'}}>
-                            <div className="dato-item">
-                                <div className="dato-label">Estacion</div>
-                                <div className="dato-value">{datos.estacion}</div>
-                            </div>
-                            <div className="dato-item">
-                                <div className="dato-label">Ubicacion</div>
-                                <div className="dato-value" style={{fontSize: '1.3em'}}>Ecija</div>
-                            </div>
-                        </div>
-
-                        <div className="datos-extra">
-                            <div className="dato-extra">
-                                <div className="dato-extra-label">Tendencia</div>
-                                <div className="dato-extra-value">{tendencia}</div>
-                            </div>
-                            <div className="dato-extra">
-                                <div className="dato-extra-label">Variacion</div>
-                                <div className="dato-extra-value">
-                                    {variacion ? `${variacion} m` : '--'}
-                                </div>
-                            </div>
-                            <div className="dato-extra">
-                                <div className="dato-extra-label">Proxy</div>
-                                <div className="dato-extra-value">#{datos.proxyUsado}</div>
-                            </div>
-                        </div>
-
-                        <div className="thresholds">
-                            <div className="threshold-title">Umbrales de Alerta</div>
-                            <div className="threshold-item threshold-verde">
-                                <span style={{fontWeight: '600'}}>🟢 Normal</span>
-                                <strong>&lt; {UMBRALES.amarillo} m</strong>
-                            </div>
-                            <div className="threshold-item threshold-amarillo">
-                                <span style={{fontWeight: '600'}}>🟡 Precaucion</span>
-                                <strong>{UMBRALES.amarillo} - {UMBRALES.naranja} m</strong>
-                            </div>
-                            <div className="threshold-item threshold-naranja">
-                                <span style={{fontWeight: '600'}}>🟠 Alerta</span>
-                                <strong>{UMBRALES.naranja} - {UMBRALES.rojo} m</strong>
-                            </div>
-                            <div className="threshold-item threshold-rojo">
-                                <span style={{fontWeight: '600'}}>🔴 Emergencia</span>
-                                <strong>{UMBRALES.rojo} - {UMBRALES.critico} m</strong>
-                            </div>
-                            <div className="threshold-item threshold-critico">
-                                <span style={{fontWeight: '600'}}>⚫ Nivel Critico</span>
-                                <strong>&gt; {UMBRALES.critico} m</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    {historico.length > 0 && (
-                        <div className="chart-container">
-                            <div className="chart-title">Evolucion Temporal</div>
-                            <div style={{height: '280px'}}>
-                                <canvas ref={chartRef}></canvas>
-                            </div>
-                            {historico.length === 1 && (
-                                <div style={{textAlign: 'center', color: '#64748b', fontSize: '0.9em', marginTop: '10px'}}>
-                                    Esperando mas datos para mostrar evolucion...
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    <div className="update-info">
-                        <div style={{fontWeight: '600', fontSize: '1em', color: '#1e293b'}}>
-                            Actualizado: {new Date(datos.timestamp).toLocaleString('es-ES')}
-                        </div>
-                        <div style={{marginTop: '8px', fontSize: '0.85em', color: '#64748b'}}>
-                            Actualizacion automatica cada 3 minutos
-                        </div>
-                        <button 
-                            className="refresh-btn" 
-                            onClick={cargarDatos}
-                            disabled={refreshing}
-                        >
-                            {refreshing ? '⏳ Actualizando...' : '🔄 Actualizar Datos'}
-                        </button>
-                    </div>
-
-                    <div className="footer">
-                        <div style={{fontWeight: '600'}}>
-                            Fuente: SAIH - Confederacion Hidrografica del Guadalquivir
-                        </div>
-                        <div style={{fontSize: '0.85em', marginTop: '5px'}}>
-                            www.chguadalquivir.es/saih
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        ReactDOM.render(<MonitorGenil />, document.getElementById('root'));
+        })();
     </script>
 </body>
 </html>
