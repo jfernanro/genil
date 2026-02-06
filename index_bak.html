@@ -356,27 +356,6 @@
             text-decoration: none;
         }
 
-        .disclaimer {
-            margin-top: 14px;
-            padding: 14px 16px;
-            background: rgba(234,179,8,0.06);
-            border: 1px solid rgba(234,179,8,0.2);
-            border-radius: 12px;
-            font-size: 0.7em;
-            color: #a0a8c0;
-            line-height: 1.6;
-            text-align: left;
-        }
-
-        .disclaimer-title {
-            color: var(--amarillo);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 1.05em;
-            margin-bottom: 6px;
-        }
-
         .loading-screen {
             text-align: center;
             padding: 80px 20px;
@@ -720,13 +699,6 @@
                 html += '<button class="btn-refresh" id="btn-refresh"' + (state.refreshing ? ' disabled' : '') + '>';
                 html += state.refreshing ? 'Verificando...' : 'Actualizar datos';
                 html += '</button>';
-
-                html += '<div class="disclaimer">';
-                html += '<div class="disclaimer-title">Aviso importante</div>';
-                html += 'Esta pagina NO es una fuente oficial. Los datos se obtienen mediante lectura automatizada de la web del SAIH Guadalquivir y pueden contener errores, retrasos o interrupciones sin previo aviso. ';
-                html += 'Este monitor no sustituye a los sistemas oficiales de alerta. Ante cualquier situacion de riesgo, consulte siempre a <strong style="color:var(--text-main)">Proteccion Civil (112)</strong> o la <strong style="color:var(--text-main)">Confederacion Hidrografica del Guadalquivir</strong>. ';
-                html += 'El autor no se hace responsable de decisiones tomadas en base a la informacion aqui mostrada.';
-                html += '</div>';
 
                 html += '<div class="footer">';
                 html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederacion Hidrografica del Guadalquivir</a>';
