@@ -1,4 +1,4 @@
-var CACHE_NAME = 'genil-v1';
+var CACHE_NAME = 'genil-v1.1';
 
 var STATIC_ASSETS = [
     './index.html',
