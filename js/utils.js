@@ -27,13 +27,24 @@ export function calcVariacion(hist, ventana) {
     return sign + diff.toFixed(2) + ' m';
 }
 
-export function formatVentana(lecturas) {
-    var minutos = lecturas * CONFIG.INTERVAL_MINUTES;
+export function calcVentanaReal(hist, ventana) {
+    if (hist.length < ventana + 1) return null;
+    var tsActual = new Date(hist[hist.length - 1].timestamp).getTime();
+    var tsAnterior = new Date(hist[hist.length - 1 - ventana].timestamp).getTime();
+    return Math.round((tsActual - tsAnterior) / 60000);
+}
+
+export function formatMinutos(minutos) {
+    if (minutos === null) return '--';
     if (minutos < 60) return minutos + ' min';
     var h = Math.floor(minutos / 60);
     var m = minutos % 60;
     if (m === 0) return h + 'h';
     return h + 'h ' + m + 'min';
+}
+
+export function formatVentanaEstimada(lecturas) {
+    return '~' + formatMinutos(lecturas * CONFIG.INTERVAL_MINUTES);
 }
 
 export function maxVentanaDisponible(hist) {

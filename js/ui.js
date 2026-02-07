@@ -1,11 +1,17 @@
 import { CONFIG } from './config.js';
 import {
     getAlerta, calcTendencia, calcVariacion,
-    formatVentana, maxVentanaDisponible,
-    isStale, formatDateTime
+    calcVentanaReal, formatMinutos, formatVentanaEstimada,
+    maxVentanaDisponible, isStale, formatDateTime
 } from './utils.js';
 
 var paypalRendered = false;
+
+function ventanaLabel(hist, ventana) {
+    var real = calcVentanaReal(hist, ventana);
+    if (real !== null) return formatMinutos(real);
+    return formatVentanaEstimada(ventana);
+}
 
 export function render(state) {
     var root = document.getElementById('app');
@@ -35,6 +41,7 @@ export function render(state) {
         v = maxV;
     }
     var sliderDisabled = state.historico.length < CONFIG.MIN_WINDOW + 1;
+    var ventanaTexto = ventanaLabel(state.historico, v);
 
     var html = '';
 
@@ -100,7 +107,7 @@ export function render(state) {
 
         html += '<div class="extra-item">';
         html += '<div class="extra-label">Ventana</div>';
-        html += '<div class="extra-value" id="val-window">' + formatVentana(v) + '</div>';
+        html += '<div class="extra-value" id="val-window">' + ventanaTexto + '</div>';
         html += '</div>';
 
         html += '</div>';
@@ -108,7 +115,7 @@ export function render(state) {
         html += '<div class="slider-wrap">';
         html += '<div class="slider-header">';
         html += '<span class="slider-title">Ventana de analisis</span>';
-        html += '<span class="slider-window" id="slider-badge">' + formatVentana(v) + '</span>';
+        html += '<span class="slider-window" id="slider-badge">' + ventanaTexto + '</span>';
         html += '</div>';
         html += '<div class="slider-track">';
         html += '<input type="range" class="slider-input" id="slider-ventana"';
@@ -116,8 +123,8 @@ export function render(state) {
         html += ' step="1"' + (sliderDisabled ? ' disabled' : '') + '>';
         html += '</div>';
         html += '<div class="slider-labels">';
-        html += '<span>' + formatVentana(CONFIG.MIN_WINDOW) + '</span>';
-        html += '<span>' + formatVentana(maxV) + '</span>';
+        html += '<span>' + ventanaLabel(state.historico, CONFIG.MIN_WINDOW) + '</span>';
+        html += '<span>' + ventanaLabel(state.historico, maxV) + '</span>';
         html += '</div>';
         html += '</div>';
 
@@ -196,6 +203,7 @@ function onSliderChange(state, value) {
 
     var tendencia = calcTendencia(state.historico, value);
     var variacion = calcVariacion(state.historico, value);
+    var texto = ventanaLabel(state.historico, value);
 
     var elTendencia = document.getElementById('val-tendencia');
     var elVariacion = document.getElementById('val-variacion');
@@ -210,10 +218,10 @@ function onSliderChange(state, value) {
         elVariacion.textContent = variacion;
     }
     if (elWindow) {
-        elWindow.textContent = formatVentana(value);
+        elWindow.textContent = texto;
     }
     if (elBadge) {
-        elBadge.textContent = formatVentana(value);
+        elBadge.textContent = texto;
     }
 }
 
