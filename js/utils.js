@@ -10,9 +10,9 @@ export function getAlerta(nivel) {
 
 export function calcTendencia(hist, ventana) {
     if (hist.length < ventana + 1) return { texto: '--', color: 'var(--text-muted)' };
-    const actual = hist[hist.length - 1].nivel;
-    const anterior = hist[hist.length - 1 - ventana].nivel;
-    const diff = actual - anterior;
+    var actual = hist[hist.length - 1].nivel;
+    var anterior = hist[hist.length - 1 - ventana].nivel;
+    var diff = actual - anterior;
     if (diff > 0.1) return { texto: 'Subiendo', color: 'var(--rojo)' };
     if (diff < -0.1) return { texto: 'Bajando', color: 'var(--verde)' };
     return { texto: 'Estable', color: 'var(--text-muted)' };
@@ -20,24 +20,24 @@ export function calcTendencia(hist, ventana) {
 
 export function calcVariacion(hist, ventana) {
     if (hist.length < ventana + 1) return '--';
-    const actual = hist[hist.length - 1].nivel;
-    const anterior = hist[hist.length - 1 - ventana].nivel;
-    const diff = actual - anterior;
-    const sign = diff >= 0 ? '+' : '';
+    var actual = hist[hist.length - 1].nivel;
+    var anterior = hist[hist.length - 1 - ventana].nivel;
+    var diff = actual - anterior;
+    var sign = diff >= 0 ? '+' : '';
     return sign + diff.toFixed(2) + ' m';
 }
 
 export function formatVentana(lecturas) {
-    const minutos = lecturas * CONFIG.INTERVAL_MINUTES;
+    var minutos = lecturas * CONFIG.INTERVAL_MINUTES;
     if (minutos < 60) return minutos + ' min';
-    const h = Math.floor(minutos / 60);
-    const m = minutos % 60;
+    var h = Math.floor(minutos / 60);
+    var m = minutos % 60;
     if (m === 0) return h + 'h';
     return h + 'h ' + m + 'min';
 }
 
 export function maxVentanaDisponible(hist) {
-    const max = hist.length - 1;
+    var max = hist.length - 1;
     if (max < CONFIG.MIN_WINDOW) return CONFIG.MIN_WINDOW;
     if (max > CONFIG.MAX_WINDOW) return CONFIG.MAX_WINDOW;
     return max;

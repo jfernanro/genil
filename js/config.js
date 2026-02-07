@@ -1,9 +1,9 @@
-export const CONFIG = {
-    UMBRALES: { 
-        amarillo: 2.7, 
-        naranja: 4.0, 
-        rojo: 5.0, 
-        critico: 7.0 
+export var CONFIG = {
+    UMBRALES: {
+        amarillo: 2.7,
+        naranja: 4.0,
+        rojo: 5.0,
+        critico: 7.0
     },
     REFRESH_MS: 60000,
     STALE_MINUTES: 30,

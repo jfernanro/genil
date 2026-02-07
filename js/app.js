@@ -1,10 +1,9 @@
 import { CONFIG } from './config.js';
 import { loadHistorico, fetchData } from './api.js';
 import { render, bindEventListeners } from './ui.js';
-import { updateChart } from './chart.js';
+import { initChart, updateChartData } from './chart.js';
 
-// Estado global de la aplicación
-const state = {
+var state = {
     nivel: 0,
     caudal: 0,
     timestamp: null,
@@ -14,43 +13,47 @@ const state = {
     ventana: CONFIG.DEFAULT_WINDOW
 };
 
-// Función de refresh
-async function onRefresh() {
-    await fetchData(state);
+var chartReady = false;
+
+function refresh() {
     render(state);
-    bindEventListeners(state, onRefresh);
-    updateChart(state.historico);
+
+    if (state.historico.length > 1) {
+        var canvas = document.getElementById('chart-canvas');
+        if (canvas && !chartReady) {
+            initChart(canvas, state.historico);
+            chartReady = true;
+        } else if (chartReady) {
+            updateChartData(state.historico);
+        }
+    }
 }
 
-// Inicialización
+async function onRefresh() {
+    await fetchData(state);
+    refresh();
+}
+
 async function init() {
-    // Cargar histórico inicial
-    const entries = await loadHistorico();
+    var entries = await loadHistorico();
     if (entries.length > 0) {
         state.historico = entries;
     }
 
-    // Primera carga de datos
     await fetchData(state);
-    render(state);
+    refresh();
     bindEventListeners(state, onRefresh);
-    updateChart(state.historico);
 
-    // Polling automático
-    setInterval(async () => {
+    setInterval(async function () {
         await fetchData(state);
-        render(state);
-        bindEventListeners(state, onRefresh);
-        updateChart(state.historico);
+        refresh();
     }, CONFIG.REFRESH_MS);
 }
 
-// Registro del service worker (PWA)
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(err => {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
         console.warn('SW registro fallido:', err);
     });
 }
 
-// Iniciar aplicación
 init();

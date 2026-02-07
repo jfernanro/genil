@@ -3,17 +3,20 @@ import { formatTime } from './utils.js';
 
 export async function loadHistorico() {
     try {
-        const res = await fetch(CONFIG.HISTORICO_URL + '?t=' + Date.now());
+        var res = await fetch(CONFIG.HISTORICO_URL + '?t=' + Date.now());
         if (!res.ok) return [];
-        const arr = await res.json();
+        var arr = await res.json();
         if (!Array.isArray(arr)) return [];
-        return arr.map(e => ({
-            label: formatTime(e.timestamp),
-            nivel: e.nivel,
-            caudal: e.caudal,
-            timestamp: e.timestamp
-        }));
-    } catch {
+        return arr.map(function (e) {
+            return {
+                label: formatTime(e.timestamp),
+                nivel: e.nivel,
+                caudal: e.caudal,
+                timestamp: e.timestamp
+            };
+        });
+    } catch (err) {
+        console.warn('Error cargando historico:', err);
         return [];
     }
 }
@@ -22,10 +25,10 @@ export async function fetchData(state) {
     state.refreshing = true;
 
     try {
-        const res = await fetch(CONFIG.DATA_URL + '?t=' + Date.now());
+        var res = await fetch(CONFIG.DATA_URL + '?t=' + Date.now());
         if (!res.ok) throw new Error('HTTP ' + res.status);
 
-        const json = await res.json();
+        var json = await res.json();
 
         if (json.status === 'error') {
             state.status = 'error';
@@ -39,8 +42,8 @@ export async function fetchData(state) {
         state.status = 'ok';
         state.refreshing = false;
 
-        const timeLabel = formatTime(json.timestamp);
-        const last = state.historico[state.historico.length - 1];
+        var timeLabel = formatTime(json.timestamp);
+        var last = state.historico[state.historico.length - 1];
 
         if (!last || last.timestamp !== json.timestamp) {
             state.historico.push({
@@ -50,7 +53,8 @@ export async function fetchData(state) {
                 timestamp: json.timestamp
             });
         }
-    } catch {
+    } catch (err) {
+        console.warn('Error obteniendo datos:', err);
         state.status = 'error';
         state.refreshing = false;
     }
