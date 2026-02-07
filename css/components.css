@@ -507,6 +507,10 @@ canvas {
 
 /* Donate Card */
 .donate-card {
+    margin-top: 14px;
+    background: rgba(234, 179, 8, 0.06);
+    border: 1px solid rgba(234, 179, 8, 0.2);
+    border-radius: 12px;
     padding: 20px 18px;
     text-align: center;
 }
