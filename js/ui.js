@@ -161,7 +161,7 @@ export function render(state) {
     // Donativo PayPal
     html += '<div class="card donate-card">';
     html += '<div class="donate-title">Apoya este proyecto</div>';
-    html += '<p class="donate-text">Si este monitor te resulta util, considera hacer una donacion para mantener el proyecto activo.</p>';
+    html += '<p class="donate-text">Si este monitor te ha resultado útil y quieres ayudarme con los costes de mantenimiento y mejora del sistema</p>';
     html += '<div id="donate-button-container">';
     html += '<div id="donate-button"></div>';
     html += '</div>';
@@ -175,7 +175,6 @@ export function render(state) {
 
     root.innerHTML = html;
 
-    // Inicializar botón PayPal después de que el DOM esté listo
     if (typeof PayPal !== 'undefined' && PayPal.Donation) {
         PayPal.Donation.Button({
             env: 'production',
@@ -183,7 +182,7 @@ export function render(state) {
             image: {
                 src: 'https://www.paypalobjects.com/es_ES/ES/i/btn/btn_donateCC_LG.gif',
                 alt: 'Botón Donar con PayPal',
-                title: 'PayPal - The safer, easier way to pay online!',
+                title: 'PayPal',
             }
         }).render('#donate-button');
     }
