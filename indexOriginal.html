@@ -4,13 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitor Rio Genil - Ecija</title>
-    <meta name="description" content="Monitor en tiempo real del nivel y caudal del Rio Genil a su paso por Ecija">
-    <meta name="theme-color" content="#1e3a8a">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Rio Genil">
-    <link rel="manifest" href="./manifest.json">
-    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -949,13 +942,6 @@
                 fetchData();
                 setInterval(fetchData, REFRESH_MS);
             });
-
-            // --- PWA: registro del service worker ---
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js').catch(function (err) {
-                    console.warn('SW registro fallido:', err);
-                });
-            }
 
         })();
     </script>

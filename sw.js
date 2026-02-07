@@ -1,7 +1,7 @@
 var CACHE_NAME = 'genil-v1';
 
 var STATIC_ASSETS = [
-    './index2.html',
+    './index.html',
     './manifest.json',
     './icons/icon-192x192.png',
     './icons/icon-512x512.png'

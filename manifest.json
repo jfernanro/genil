@@ -2,7 +2,7 @@
   "name": "Monitor Rio Genil - Ecija",
   "short_name": "Rio Genil",
   "description": "Monitor en tiempo real del nivel y caudal del Rio Genil a su paso por Ecija",
-  "start_url": "./index2.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#070b14",
