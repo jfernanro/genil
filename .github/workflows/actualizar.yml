@@ -3,6 +3,8 @@ name: Actualizar Rio Genil
 on:
   schedule:
     - cron: '7,22,37,52 * * * *'
+  repository_dispatch:
+    types: [scrape]
   workflow_dispatch:
 
 jobs:
