@@ -158,6 +158,15 @@ export function render(state) {
     html += 'El autor no se hace responsable de decisiones tomadas en base a la informacion aqui mostrada.';
     html += '</div>';
 
+    // Donativo PayPal
+    html += '<div class="card donate-card">';
+    html += '<div class="donate-title">Apoya este proyecto</div>';
+    html += '<p class="donate-text">Si este monitor te resulta util, considera hacer una donacion para mantener el proyecto activo.</p>';
+    html += '<div id="donate-button-container">';
+    html += '<div id="donate-button"></div>';
+    html += '</div>';
+    html += '</div>';
+
     // Footer
     html += '<div class="footer">';
     html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederacion Hidrografica del Guadalquivir</a>';
@@ -165,6 +174,19 @@ export function render(state) {
     html += '</div>';
 
     root.innerHTML = html;
+
+    // Inicializar botón PayPal después de que el DOM esté listo
+    if (typeof PayPal !== 'undefined' && PayPal.Donation) {
+        PayPal.Donation.Button({
+            env: 'production',
+            hosted_button_id: 'ZJ7867PTZQNU2',
+            image: {
+                src: 'https://www.paypalobjects.com/es_ES/ES/i/btn/btn_donateCC_LG.gif',
+                alt: 'Botón Donar con PayPal',
+                title: 'PayPal - The safer, easier way to pay online!',
+            }
+        }).render('#donate-button');
+    }
 
     // Chart
     if (state.historico.length > 1) {

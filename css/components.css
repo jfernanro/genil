@@ -505,6 +505,38 @@ canvas {
     margin-bottom: 6px;
 }
 
+/* Donate Card */
+.donate-card {
+    padding: 20px 18px;
+    text-align: center;
+}
+
+.donate-title {
+    font-size: 0.85em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.donate-text {
+    font-size: 0.75em;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+#donate-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#donate-button {
+    margin: 0 auto;
+}
+
 /* Loading */
 .loading-screen {
     text-align: center;
