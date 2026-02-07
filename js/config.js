@@ -12,5 +12,6 @@ export var CONFIG = {
     MIN_WINDOW: 2,
     MAX_WINDOW: 20,
     DATA_URL: './datos.json',
-    HISTORICO_URL: './historico.json'
+    HISTORICO_URL: './historico.json',
+    VERSION: '1.6'
 };

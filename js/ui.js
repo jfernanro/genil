@@ -171,6 +171,7 @@ export function render(state) {
     html += '<div class="footer">';
     html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederacion Hidrografica del Guadalquivir</a>';
     html += '<br>Actualizacion automatica via GitHub Actions cada 15 min';
+    html += '<br><br><small>Creado por <a href="https://jfernanro.github.io/" target="_blank" rel="noopener">jfernanro.github.io</a> &middot; v' + (CONFIG.VERSION || '1.0') + '</small>';
     html += '</div>';
 
     root.innerHTML = html;
