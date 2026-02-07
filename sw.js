@@ -3,6 +3,16 @@ var CACHE_NAME = 'genil-v1';
 var STATIC_ASSETS = [
     './index.html',
     './manifest.json',
+    './css/variables.css',
+    './css/base.css',
+    './css/animations.css',
+    './css/components.css',
+    './js/config.js',
+    './js/utils.js',
+    './js/api.js',
+    './js/chart.js',
+    './js/ui.js',
+    './js/app.js',
     './icons/icon-192x192.png',
     './icons/icon-512x512.png'
 ];

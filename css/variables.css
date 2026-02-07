@@ -1,0 +1,13 @@
+:root {
+    --bg-base: #070b14;
+    --bg-card: rgba(15, 23, 42, 0.85);
+    --border-card: rgba(51, 65, 85, 0.6);
+    --text-main: #f1f5f9;
+    --text-muted: #7c8db5;
+    --accent: #3b82f6;
+    --verde: #22c55e;
+    --amarillo: #eab308;
+    --naranja: #f97316;
+    --rojo: #ef4444;
+    --critico: #991b1b;
+}
