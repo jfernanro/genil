@@ -1,7 +1,7 @@
 import { CONFIG } from './config.js';
 import { loadHistorico, fetchData } from './api.js';
 import { render, bindEventListeners } from './ui.js';
-import { initChart, updateChartData } from './chart.js';
+import { initChart } from './chart.js';
 
 var state = {
     nivel: 0,
@@ -13,18 +13,13 @@ var state = {
     ventana: CONFIG.DEFAULT_WINDOW
 };
 
-var chartReady = false;
-
 function refresh() {
     render(state);
 
     if (state.historico.length > 1) {
         var canvas = document.getElementById('chart-canvas');
-        if (canvas && !chartReady) {
+        if (canvas) {
             initChart(canvas, state.historico);
-            chartReady = true;
-        } else if (chartReady) {
-            updateChartData(state.historico);
         }
     }
 }
