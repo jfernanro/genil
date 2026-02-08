@@ -5,8 +5,6 @@ import {
     maxVentanaDisponible, isStale, formatDateTime
 } from './utils.js';
 
-var paypalRendered = false;
-
 function ventanaLabel(hist, ventana) {
     var real = calcVentanaReal(hist, ventana);
     if (real !== null) return formatMinutos(real);
@@ -160,14 +158,6 @@ export function render(state) {
     html += 'El autor no se hace responsable de decisiones tomadas en base a la informacion aqui mostrada.';
     html += '</div>';
 
-    html += '<div class="card donate-card">';
-    html += '<div class="donate-title">Apoya este proyecto</div>';
-    html += '<p class="donate-text">Si este monitor te ha resultado util y quieres ayudarme con los costes de mantenimiento y mejora del sistema</p>';
-    html += '<div id="donate-button-container">';
-    html += '<div id="donate-button"></div>';
-    html += '</div>';
-    html += '</div>';
-
     html += '<div class="footer">';
     html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederacion Hidrografica del Guadalquivir</a>';
     html += '<br>Actualizacion automatica via GitHub Actions cada 15 min';
@@ -176,28 +166,8 @@ export function render(state) {
 
     root.innerHTML = html;
 
-    renderPayPal();
 }
 
-function renderPayPal() {
-    if (paypalRendered) return;
-    if (typeof PayPal === 'undefined' || !PayPal.Donation) return;
-
-    var container = document.getElementById('donate-button');
-    if (!container) return;
-
-    PayPal.Donation.Button({
-        env: 'production',
-        hosted_button_id: 'ZJ7867PTZQNU2',
-        image: {
-            src: 'https://www.paypalobjects.com/es_ES/ES/i/btn/btn_donateCC_LG.gif',
-            alt: 'Donar con PayPal',
-            title: 'PayPal'
-        }
-    }).render('#donate-button');
-
-    paypalRendered = true;
-}
 
 function onSliderChange(state, value) {
     state.ventana = value;
