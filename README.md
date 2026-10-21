@@ -8,17 +8,17 @@ Publicado en [GitHub Pages](https://jfernanro.github.io/genil/)
 
 El proyecto funciona en dos capas independientes:
 
-**Scraper (backend)** - Un script Python ejecutado cada 15 minutos mediante GitHub Actions. Se conecta a la web del SAIH Guadalquivir (directamente o a traves de proxies publicos), localiza la fila de la estacion A17 (Ecija/Genil) en la tabla de aforos, extrae nivel y caudal, y escribe el resultado en `datos.json`. Mantiene un historico persistente de las ultimas 20 lecturas en `historico.json`. Solo hace commit si los datos han cambiado.
+**Scraper (backend)** - Un script Python ejecutado cada 15 minutos mediante GitHub Actions, disparado desde fuera por un job de cron-job.org (`repository_dispatch`), con el cron de GitHub cada hora como respaldo. Se conecta a la web del SAIH Guadalquivir (directamente o a traves de proxies publicos), localiza la fila de la estacion A17 (Ecija/Genil) en la tabla de aforos, extrae nivel y caudal, y escribe el resultado en `datos.json`. Mantiene un historico persistente de las lecturas de las ultimas 24 horas (minimo 20) en `historico.json`. Solo hace commit si los datos han cambiado.
 
 **Dashboard (frontend)** - PWA instalable servida por GitHub Pages. Consume `datos.json` e `historico.json` y presenta los datos con indicadores visuales de alerta segun umbrales predefinidos. Incluye grafico de tendencia, slider interactivo para ajustar la ventana de analisis temporal y deteccion de datos obsoletos. Se refresca automaticamente cada 60 segundos. Funciona offline mostrando los ultimos datos cacheados.
 
 ## Estructura de ficheros
 
 ```
-.github/workflows/actualizar.yml   Workflow de GitHub Actions (cron cada 15 min)
+.github/workflows/actualizar.yml   Workflow de GitHub Actions (repository_dispatch + cron horario de respaldo)
 scraper.py                          Script de extraccion de datos
 datos.json                          Ultimo dato extraido (generado automaticamente)
-historico.json                      Ultimas 20 lecturas (generado automaticamente)
+historico.json                      Lecturas de las ultimas 24 h (generado automaticamente)
 index.html                          Dashboard principal (GitHub Pages)
 js/
   config.js                         Constantes y configuracion
@@ -52,7 +52,7 @@ sw.js                               Service Worker (cache offline)
 ## Tecnologias
 
 - Python 3.9 (scraper con `requests`)
-- GitHub Actions (automatizacion y cron con offset)
+- GitHub Actions (automatizacion) + cron-job.org (disparo externo cada 15 min)
 - GitHub Pages (hosting estatico)
 - Chart.js 4.x (graficos)
 - HTML/CSS/JS vanilla con ES modules (sin frameworks)
@@ -66,5 +66,5 @@ Todos los datos provienen del Sistema Automatico de Informacion Hidrologica (SAI
 
 - El scraper depende de la estructura HTML de la web del SAIH. Si la CHG modifica el formato de la tabla, el parseo dejara de funcionar.
 - Los proxies CORS publicos utilizados (AllOrigins, CodeTabs) pueden caer o limitar peticiones sin previo aviso.
-- El historico persistente cubre las ultimas 20 lecturas (aproximadamente 5 horas). No se almacena historico a largo plazo.
-- GitHub Actions tiene retrasos variables en la ejecucion de cron (tipicamente 2-10 minutos).
+- El historico persistente cubre las ultimas 24 horas (`HISTORICO_HORAS` en `scraper.py`), con un minimo de 20 lecturas por si el cron de GitHub se retrasa y en 24 horas hay menos lecturas. No se almacena historico a largo plazo.
+- El cron de GitHub Actions es muy irregular (puede retrasarse horas), por eso el disparo principal es externo. Si el token usado por cron-job.org caduca, solo queda el respaldo horario.

@@ -3,7 +3,7 @@ import json
 import re
 import logging
 import urllib.parse
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 logging.basicConfig(
     level=logging.INFO,
@@ -15,7 +15,9 @@ log = logging.getLogger(__name__)
 SAIH_URL = "https://www.chguadalquivir.es/saih/AforosTabla.aspx"
 JSON_FILE = "datos.json"
 HISTORICO_FILE = "historico.json"
-MAX_HISTORICO = 20
+HISTORICO_HORAS = 24          # ventana del historico (cambiar a 48 si se quiere)
+MIN_HISTORICO = 20            # nunca guardar menos de esto (cron de GitHub irregular)
+MAX_HISTORICO = HISTORICO_HORAS * 8   # tope de seguridad (2x la cadencia nominal de 15 min)
 MAX_RETRIES = 2
 TIMEOUT_SECONDS = 20
 
@@ -173,6 +175,30 @@ def fetch_html(bridge):
     return None
 
 
+def parse_ts(ts):
+    try:
+        return datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return None
+
+
+def trim_historico(historico):
+    last = historico[-1] if historico else None
+    newest = parse_ts(last.get("timestamp")) if isinstance(last, dict) else None
+    if newest is None:
+        return historico[-MAX_HISTORICO:]
+    limite = newest - timedelta(hours=HISTORICO_HORAS)
+    corte = len(historico)
+    for i, e in enumerate(historico):
+        ts = parse_ts(e.get("timestamp")) if isinstance(e, dict) else None
+        if ts is not None and ts >= limite:
+            corte = i
+            break
+    desde = min(corte, max(0, len(historico) - MIN_HISTORICO))
+    historico = historico[desde:]
+    return historico[-MAX_HISTORICO:]
+
+
 def update_historico(entry):
     historico = load_json(HISTORICO_FILE, [])
 
@@ -183,8 +209,7 @@ def update_historico(entry):
 
     historico.append(entry)
 
-    if len(historico) > MAX_HISTORICO:
-        historico = historico[-MAX_HISTORICO:]
+    historico = trim_historico(historico)
 
     save_json(HISTORICO_FILE, historico)
     log.info("Historico actualizado: %d lecturas", len(historico))

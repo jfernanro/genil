@@ -1,5 +1,5 @@
 import { CONFIG } from './config.js';
-import { formatTime } from './utils.js';
+import { formatTime, trimHistorico } from './utils.js';
 
 export async function loadHistorico() {
     try {
@@ -7,14 +7,14 @@ export async function loadHistorico() {
         if (!res.ok) return [];
         var arr = await res.json();
         if (!Array.isArray(arr)) return [];
-        return arr.map(function (e) {
+        return trimHistorico(arr.map(function (e) {
             return {
                 label: formatTime(e.timestamp),
                 nivel: e.nivel,
                 caudal: e.caudal,
                 timestamp: e.timestamp
             };
-        });
+        }));
     } catch (err) {
         console.warn('Error cargando historico:', err);
         return [];
@@ -49,6 +49,7 @@ function applyReading(state, nivel, caudal, ts) {
             caudal: caudal,
             timestamp: ts
         });
+        state.historico = trimHistorico(state.historico);
     }
 }
 

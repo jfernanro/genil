@@ -1,6 +1,15 @@
+import { formatTime, formatDiaHora } from './utils.js';
+
 var chartInstance = null;
 
+function dia(ts) {
+    return new Date(ts).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+}
+
 export function initChart(canvas, historico) {
+    var muchos = historico.length > 30;
+    var multiDia = historico.length > 1 && dia(historico[0].timestamp) !== dia(historico[historico.length - 1].timestamp);
+
     if (chartInstance) {
         chartInstance.destroy();
     }
@@ -25,8 +34,10 @@ export function initChart(canvas, historico) {
                 },
                 borderWidth: 2.5,
                 fill: true,
-                tension: 0.4,
-                pointRadius: 4,
+                tension: muchos ? 0.2 : 0.4,
+                pointRadius: muchos ? 0 : 4,
+                pointHoverRadius: 5,
+                pointHitRadius: 8,
                 pointBackgroundColor: '#3b82f6',
                 pointBorderColor: '#0f172a',
                 pointBorderWidth: 2
@@ -35,6 +46,7 @@ export function initChart(canvas, historico) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -42,7 +54,10 @@ export function initChart(canvas, historico) {
                     titleFont: { family: 'Outfit', size: 12 },
                     bodyFont: { family: 'JetBrains Mono', size: 12 },
                     padding: 10,
-                    cornerRadius: 8
+                    cornerRadius: 8,
+                    callbacks: {
+                        title: function (items) { return formatDiaHora(historico[items[0].dataIndex].timestamp); }
+                    }
                 }
             },
             scales: {
@@ -52,7 +67,18 @@ export function initChart(canvas, historico) {
                 },
                 x: {
                     grid: { color: 'rgba(51,65,85,0.15)' },
-                    ticks: { color: '#7c8db5', font: { family: 'Outfit', size: 10 } }
+                    ticks: {
+                        color: '#7c8db5',
+                        font: { family: 'Outfit', size: 10 },
+                        autoSkip: true,
+                        maxTicksLimit: 6,
+                        maxRotation: 0,
+                        callback: function (value) {
+                            var h = historico[value];
+                            if (!h) return '';
+                            return multiDia ? [formatTime(h.timestamp), dia(h.timestamp)] : formatTime(h.timestamp);
+                        }
+                    }
                 }
             }
         }

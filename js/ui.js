@@ -155,7 +155,9 @@ export function render(state) {
     }
 
     html += '<div class="card chart-wrap">';
-    html += '<div class="chart-title">Evolucion temporal (ultimas ' + state.historico.length + ' lecturas)</div>';
+    var n = state.historico.length;
+    var periodo = n > 1 ? calcVentanaReal(state.historico, n - 1) : null;
+    html += '<div class="chart-title">Evolucion temporal (' + (periodo !== null ? 'ultimas ' + formatMinutos(periodo) + ', ' : '') + n + ' lecturas)</div>';
     if (state.historico.length > 1) {
         html += '<div style="height:220px"><canvas id="chart-canvas"></canvas></div>';
     } else {

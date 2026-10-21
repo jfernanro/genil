@@ -35,9 +35,10 @@ export function calcVentanaReal(hist, ventana) {
 }
 
 export function formatMinutos(minutos) {
-    if (minutos === null) return '--';
+    if (minutos === null || !isFinite(minutos)) return '--';
     if (minutos < 60) return minutos + ' min';
     var h = Math.floor(minutos / 60);
+    if (h >= 48) return Math.floor(h / 24) + 'd ' + (h % 24) + 'h';
     var m = minutos % 60;
     if (m === 0) return h + 'h';
     return h + 'h ' + m + 'min';
@@ -62,6 +63,25 @@ export function isStale(ts) {
 export function formatTime(ts) {
     if (!ts) return '--:--';
     return new Date(ts).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+}
+
+export function formatDiaHora(ts) {
+    if (!ts) return '--';
+    return new Date(ts).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+export function trimHistorico(hist) {
+    if (!hist.length) return hist;
+    var newest = new Date(hist[hist.length - 1].timestamp).getTime();
+    if (!isFinite(newest)) return hist.slice(-CONFIG.HISTORICO_MAX);
+    var limite = newest - CONFIG.HISTORICO_HORAS * 3600000;
+    var corte = hist.length;
+    for (var i = 0; i < hist.length; i++) {
+        var t = new Date(hist[i].timestamp).getTime();
+        if (isFinite(t) && t >= limite) { corte = i; break; }
+    }
+    var desde = Math.min(corte, Math.max(0, hist.length - CONFIG.HISTORICO_MIN));
+    return hist.slice(desde).slice(-CONFIG.HISTORICO_MAX);
 }
 
 export function formatDateTime(ts) {
