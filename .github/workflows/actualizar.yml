@@ -2,7 +2,8 @@ name: Actualizar Rio Genil
 
 on:
   schedule:
-    - cron: '7,22,37,52 * * * *'
+    # Respaldo: el disparo principal es cron-job.org cada 15 min via repository_dispatch
+    - cron: '30 * * * *'
   repository_dispatch:
     types: [scrape]
   workflow_dispatch:
