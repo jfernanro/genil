@@ -8,6 +8,7 @@ var state = {
     caudal: 0,
     timestamp: null,
     status: 'loading',
+    lastAttempt: null,
     historico: [],
     refreshing: false,
     ventana: CONFIG.DEFAULT_WINDOW

@@ -190,15 +190,43 @@ def update_historico(entry):
     log.info("Historico actualizado: %d lecturas", len(historico))
 
 
+def is_valid_reading(d):
+    if not isinstance(d, dict):
+        return False
+    nivel = d.get("nivel")
+    if isinstance(nivel, bool) or not isinstance(nivel, (int, float)):
+        return False
+    if nivel < 0 or nivel > 15:
+        return False
+    ts = d.get("timestamp")
+    return isinstance(ts, str) and ts != ""
+
+
+def last_good_reading():
+    prev = load_json(JSON_FILE, None)
+    if is_valid_reading(prev):
+        status = prev.get("status")
+        if status == "success" or (status == "error" and "last_attempt" in prev):
+            return {
+                "nivel": prev["nivel"],
+                "caudal": prev.get("caudal"),
+                "timestamp": prev["timestamp"]
+            }, "datos previos"
+
+    hist = load_json(HISTORICO_FILE, [])
+    if isinstance(hist, list) and hist and is_valid_reading(hist[-1]):
+        last = hist[-1]
+        return {
+            "nivel": last["nivel"],
+            "caudal": last.get("caudal"),
+            "timestamp": last["timestamp"]
+        }, "historico"
+
+    return None, "ninguna"
+
+
 def main():
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-    error_data = {
-        "nivel": 0.0,
-        "caudal": 0.0,
-        "timestamp": now,
-        "status": "error"
-    }
 
     for bridge in BRIDGES:
         html = fetch_html(bridge)
@@ -230,7 +258,33 @@ def main():
         return
 
     log.error("Todos los puentes fallaron. Se guarda estado de error.")
+    good, source = last_good_reading()
+
+    if good:
+        error_data = {
+            "nivel": good["nivel"],
+            "caudal": good["caudal"],
+            "timestamp": good["timestamp"],
+            "status": "error",
+            "last_attempt": now
+        }
+    else:
+        error_data = {
+            "nivel": None,
+            "caudal": None,
+            "timestamp": None,
+            "status": "error",
+            "last_attempt": now
+        }
+
     save_json(JSON_FILE, error_data)
+    if good:
+        log.info(
+            "Estado de error guardado con ultimo dato valido (fuente: %s): nivel=%s, timestamp=%s",
+            source, error_data["nivel"], error_data["timestamp"]
+        )
+    else:
+        log.warning("Estado de error guardado sin dato valido previo (nivel/caudal/timestamp null)")
 
 
 if __name__ == "__main__":

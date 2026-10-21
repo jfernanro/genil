@@ -57,6 +57,17 @@
     animation: none;
 }
 
+.live-badge.stale {
+    background: rgba(234, 179, 8, 0.15);
+    color: var(--amarillo);
+    border-color: var(--amarillo);
+}
+
+.live-badge.stale .live-dot {
+    background: var(--amarillo);
+    animation: none;
+}
+
 /* Cards */
 .card {
     background: var(--bg-card);
@@ -529,6 +540,12 @@ canvas {
     padding: 24px;
     text-align: center;
     margin-bottom: 14px;
+}
+
+.error-box.warn {
+    background: rgba(234, 179, 8, 0.1);
+    border-color: rgba(234, 179, 8, 0.35);
+    color: var(--amarillo);
 }
 
 .error-box p {

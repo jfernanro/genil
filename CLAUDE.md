@@ -30,7 +30,7 @@ Si ejecutas el scraper en local, no hagas commit de `datos.json`/`historico.json
 
 - Recorre `BRIDGES` en orden: petición directa al SAIH, luego AllOrigins (respuesta JSON, HTML en `contents`) y CodeTabs (HTML). El primero que devuelva HTML parseable gana.
 - El parseo es por regex, sin parser HTML: localiza la fila `<tr>` que contiene "GENIL" y ("A17" o "ECIJA") y lee las columnas por índice (`COL_NIVEL`, `COL_CAUDAL`, `COL_COTA`). Si la CHG cambia la tabla, lo habitual es tener que ajustar esos índices. Los números vienen en formato español (`1.234,56`), de ahí `parse_number`.
-- Si fallan todos los puentes, se escribe `datos.json` con `status: "error"` y el histórico no se toca. El frontend depende de este campo `status`.
+- Si fallan todos los puentes, se escribe `datos.json` con `status: "error"`, `last_attempt` (hora del intento) y el último dato válido conocido (`nivel`/`caudal`/`timestamp` de la lectura buena, tomados del `datos.json` previo o de `historico[-1]`; `null` si no hay ninguno). El histórico no se toca. Un `status: "error"` sin `last_attempt` es el formato antiguo y no contiene datos válidos. El frontend depende de estos campos: muestra el último dato con aviso "SIN ACTUALIZAR" (`state.status = 'fallback'`) o "SIN DATOS" si no hay ninguno.
 
 ## Frontend
 

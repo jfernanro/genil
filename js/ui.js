@@ -32,7 +32,16 @@ export function render(state) {
     var tendencia = calcTendencia(state.historico, v);
     var variacion = calcVariacion(state.historico, v);
     var stale = isStale(state.timestamp);
-    var badgeClass = state.status === 'error' ? 'error' : '';
+    var hasData = state.status === 'ok' || state.status === 'fallback';
+    var badgeClass = '';
+    var badgeText = 'EN VIVO';
+    if (state.status === 'fallback') {
+        badgeClass = 'stale';
+        badgeText = 'SIN ACTUALIZAR';
+    } else if (state.status === 'error') {
+        badgeClass = 'error';
+        badgeText = 'SIN DATOS';
+    }
     var maxV = maxVentanaDisponible(state.historico);
     if (v > maxV) {
         state.ventana = maxV;
@@ -48,7 +57,7 @@ export function render(state) {
     html += '<p class="header-sub">Estacion A17 - SAIH Guadalquivir</p>';
     html += '<span class="live-badge ' + badgeClass + '">';
     html += '<span class="live-dot"></span>';
-    html += (state.status === 'error' ? 'SIN DATOS' : 'EN VIVO');
+    html += badgeText;
     html += '</span>';
     html += '</div>';
 
@@ -59,7 +68,14 @@ export function render(state) {
         html += '</div>';
     }
 
-    if (state.status === 'ok') {
+    if (state.status === 'fallback') {
+        html += '<div class="error-box warn">';
+        html += '<strong style="font-size:1.1em">No se ha podido actualizar</strong>';
+        html += '<p>Ultimo dato valido: ' + formatDateTime(state.timestamp) + (state.lastAttempt ? '<br>Ultimo intento: ' + formatDateTime(state.lastAttempt) : '') + '</p>';
+        html += '</div>';
+    }
+
+    if (hasData) {
         html += '<div class="card">';
         html += '<div class="card-glow glow-' + alerta.key + '"></div>';
         html += '<div class="nivel-label">Altura del agua</div>';
@@ -68,13 +84,13 @@ export function render(state) {
         html += '<span class="nivel-unidad">m</span>';
         html += '</div>';
         html += '<div class="alert-pill pill-' + alerta.key + '">' + alerta.texto + '</div>';
-        if (stale) {
+        if (stale && state.status === 'ok') {
             html += '<div class="dato-stale">Dato antiguo - ultima lectura: ' + formatDateTime(state.timestamp) + '</div>';
         }
         html += '</div>';
     }
 
-    if (state.status === 'ok') {
+    if (hasData) {
         html += '<div class="card">';
 
         html += '<div class="data-grid">';
