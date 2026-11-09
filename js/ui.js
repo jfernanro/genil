@@ -147,15 +147,6 @@ export function render(state) {
         html += '</div>';
         html += '</div>';
 
-        html += '<div class="thresholds">';
-        html += '<div class="thresholds-title">Umbrales de alerta (orientativos)</div>';
-        html += '<div class="th-row th-verde"><span>Normal</span><strong>&lt; ' + CONFIG.UMBRALES.amarillo + ' m</strong></div>';
-        html += '<div class="th-row th-amarillo"><span>Precaución</span><strong>' + CONFIG.UMBRALES.amarillo + ' - ' + CONFIG.UMBRALES.naranja + ' m</strong></div>';
-        html += '<div class="th-row th-naranja"><span>Alerta</span><strong>' + CONFIG.UMBRALES.naranja + ' - ' + CONFIG.UMBRALES.rojo + ' m</strong></div>';
-        html += '<div class="th-row th-rojo"><span>Emergencia</span><strong>' + CONFIG.UMBRALES.rojo + ' - ' + CONFIG.UMBRALES.critico + ' m</strong></div>';
-        html += '<div class="th-row th-critico"><span>Crítico</span><strong>&gt; ' + CONFIG.UMBRALES.critico + ' m</strong></div>';
-        html += '</div>';
-
         html += '</div>';
     }
 
@@ -168,6 +159,15 @@ export function render(state) {
     } else {
         html += '<div class="chart-empty">Esperando más lecturas para mostrar la gráfica...</div>';
     }
+
+    html += '<div class="thresholds">';
+    html += '<div class="thresholds-title">Umbrales de alerta (orientativos)</div>';
+    html += '<div class="th-row th-verde"><span>Normal</span><strong>&lt; ' + CONFIG.UMBRALES.amarillo + ' m</strong></div>';
+    html += '<div class="th-row th-amarillo"><span>Precaución</span><strong>' + CONFIG.UMBRALES.amarillo + ' - ' + CONFIG.UMBRALES.naranja + ' m</strong></div>';
+    html += '<div class="th-row th-naranja"><span>Alerta</span><strong>' + CONFIG.UMBRALES.naranja + ' - ' + CONFIG.UMBRALES.rojo + ' m</strong></div>';
+    html += '<div class="th-row th-rojo"><span>Emergencia</span><strong>' + CONFIG.UMBRALES.rojo + ' - ' + CONFIG.UMBRALES.critico + ' m</strong></div>';
+    html += '<div class="th-row th-critico"><span>Crítico</span><strong>&gt; ' + CONFIG.UMBRALES.critico + ' m</strong></div>';
+    html += '</div>';
     html += '</div>';
 
     html += '<button class="btn-refresh" id="btn-refresh"' + (state.refreshing ? ' disabled' : '') + '>';
