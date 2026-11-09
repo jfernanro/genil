@@ -184,7 +184,7 @@ export function render(state) {
     html += '<div class="footer">';
     html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederación Hidrográfica del Guadalquivir</a>';
     html += '<br>Actualización automática vía GitHub Actions cada 15 min';
-    html += '<br><br><span class="footer-privacy">Privacidad: sin cookies ni registro. Estadísticas de visitas anónimas y agregadas (GoatCounter). La preferencia de tema se guarda solo en tu navegador. El alojamiento (GitHub Pages) registra datos técnicos de conexión.</span>';
+    html += '<br><br><span class="footer-privacy">Privacidad: sin cookies ni registro; solo estadísticas anónimas de visitas (GoatCounter).</span>';
     html += '<br><br><small>Creado por <a href="https://jfernanro.github.io/" target="_blank" rel="noopener">jfernanro.github.io</a> &middot; v' + (CONFIG.VERSION || '1.0') + '</small>';
     html += '</div>';
 
