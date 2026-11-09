@@ -23,7 +23,7 @@ Si ejecutas el scraper en local, no hagas commit de `datos.json`/`historico.json
 
 ## Automatización y git
 
-- `.github/workflows/actualizar.yml` ejecuta el scraper. El disparo principal es un job externo en cron-job.org que cada 15 min llama a la API de GitHub (`repository_dispatch` tipo `scrape`, con un token personal que puede caducar); el `schedule` (`30 * * * *`) es solo un respaldo horario porque el cron de GitHub es muy irregular. También admite `workflow_dispatch`. Cada ejecución hace commit como "RioBot" con el mensaje "Actualizacion automatica niveles" si los datos cambian, lo que en la práctica es siempre (cambia `timestamp` o `last_attempt`); cada commit dispara un despliegue de Pages (límite blando ~10/h).
+- `.github/workflows/actualizar.yml` ejecuta el scraper. El disparo principal es un job externo en cron-job.org que cada 15 min (minutos 5, 20, 35 y 50, desfasados del cuarto de hora porque el SAIH falla justo en él) llama a la API de GitHub (`repository_dispatch` tipo `scrape`, con un token personal que puede caducar); el `schedule` (`40 * * * *`) es solo un respaldo horario porque el cron de GitHub es muy irregular. También admite `workflow_dispatch`. Cada ejecución hace commit como "RioBot" con el mensaje "Actualizacion automatica niveles" si los datos cambian, lo que en la práctica es siempre (cambia `timestamp` o `last_attempt`); cada commit dispara un despliegue de Pages (límite blando ~10/h).
 - Por eso `main` avanza constantemente en remoto: haz `git pull --rebase` antes de hacer push. Casi todo el historial son commits del bot; para ver cambios de código reales, filtra ese mensaje (`git log --invert-grep --grep="Actualizacion automatica"`).
 
 ## Scraper
