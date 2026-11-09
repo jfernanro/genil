@@ -162,7 +162,7 @@ export function render(state) {
     html += '<div class="card chart-wrap">';
     var n = state.historico.length;
     var periodo = n > 1 ? calcVentanaReal(state.historico, n - 1) : null;
-    html += '<div class="chart-title">Evolución temporal (' + (periodo !== null ? 'últimas' + formatMinutos(periodo) + ', ' : '') + n + ' lecturas)</div>';
+    html += '<div class="chart-title">Evolución temporal (' + (periodo !== null ? 'últimas ' + formatMinutos(periodo) + ', ' : '') + n + ' lecturas)</div>';
     if (state.historico.length > 1) {
         html += '<div style="height:220px"><canvas id="chart-canvas"></canvas></div>';
     } else {
