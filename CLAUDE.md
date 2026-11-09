@@ -34,10 +34,12 @@ Si ejecutas el scraper en local, no hagas commit de `datos.json`/`historico.json
 
 ## Frontend
 
-- `js/app.js` mantiene un único objeto `state` mutable que se pasa a los demás módulos: `api.js` lo rellena (y añade la última lectura a `state.historico` si su timestamp es nuevo), `ui.js` regenera todo el DOM de `#app` como cadena HTML en cada `render(state)` y gestiona los eventos por delegación sobre la raíz, y `chart.js` destruye y recrea la instancia de Chart.js (cargado global por CDN en `index.html`) en cada refresco.
+- `js/app.js` mantiene un único objeto `state` mutable que se pasa a los demás módulos: `api.js` lo rellena (y añade la última lectura a `state.historico` si su timestamp es nuevo), `ui.js` regenera todo el DOM de `#app` como cadena HTML en cada `render(state)` y gestiona los eventos por delegación sobre la raíz, y `chart.js` destruye y recrea la instancia de Chart.js 4.4.0 (autoalojado en `vendor/`, cargado global en `index.html`) en cada refresco.
 - Toda la configuración (umbrales de alerta, intervalo de refresco, minutos para considerar datos obsoletos, rango de la ventana del slider de tendencia) está en `js/config.js`. Los umbrales del README deben coincidir con `CONFIG.UMBRALES`. `CONFIG.HISTORICO_HORAS`/`CONFIG.HISTORICO_MIN` deben coincidir con `HISTORICO_HORAS`/`MIN_HISTORICO` del scraper: `trimHistorico` (`js/utils.js`) replica la misma regla de recorte en el frontend.
 - Colores: todos los que dependen del tema son variables de `css/variables.css` (`:root` = oscuro, `:root[data-theme="light"]` = claro); no hardcodear colores nuevos. `js/chart.js` los lee con `cssVar()` de `js/theme.js` (que también alterna el tema). La preferencia se guarda en `localStorage` (`CONFIG.THEME_KEY`) y la aplica un script inline en `index.html` antes del CSS.
 - Estilo de código: `var` y `function` clásicas en lugar de `const`/arrow functions; mantenlo así.
+
+- Sin recursos de terceros salvo GoatCounter: fuentes autoalojadas en `fonts/` (`css/fonts.css`) y Chart.js en `vendor/`. No añadir CDNs ni fuentes externas; el footer afirma que no hay más terceros.
 
 ## Service worker
 

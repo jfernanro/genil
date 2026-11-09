@@ -1,8 +1,9 @@
-var CACHE_NAME = 'genil-v1.9.0';
+var CACHE_NAME = 'genil-v1.10.0';
 
 var STATIC_ASSETS = [
     './index.html',
     './manifest.json',
+    './css/fonts.css',
     './css/variables.css',
     './css/base.css',
     './css/animations.css',
@@ -14,6 +15,13 @@ var STATIC_ASSETS = [
     './js/chart.js',
     './js/ui.js',
     './js/app.js',
+    './vendor/chart.umd.min.js',
+    './fonts/outfit-latin-400-normal.woff2',
+    './fonts/outfit-latin-600-normal.woff2',
+    './fonts/outfit-latin-800-normal.woff2',
+    './fonts/outfit-latin-900-normal.woff2',
+    './fonts/jetbrains-mono-latin-500-normal.woff2',
+    './fonts/jetbrains-mono-latin-700-normal.woff2',
     './icons/icon-192x192.png',
     './icons/icon-512x512.png'
 ];

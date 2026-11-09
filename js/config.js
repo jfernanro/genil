@@ -15,7 +15,7 @@ export var CONFIG = {
     DATA_URL: './datos.json',
     HISTORICO_URL: './historico.json',
     THEME_KEY: 'genil-theme',
-    VERSION: '1.9'
+    VERSION: '1.10'
 };
 
 CONFIG.HISTORICO_MAX = CONFIG.HISTORICO_HORAS * 8;

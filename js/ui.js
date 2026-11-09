@@ -148,7 +148,7 @@ export function render(state) {
         html += '</div>';
 
         html += '<div class="thresholds">';
-        html += '<div class="thresholds-title">Umbrales de alerta</div>';
+        html += '<div class="thresholds-title">Umbrales de alerta (orientativos)</div>';
         html += '<div class="th-row th-verde"><span>Normal</span><strong>&lt; ' + CONFIG.UMBRALES.amarillo + ' m</strong></div>';
         html += '<div class="th-row th-amarillo"><span>Precaucion</span><strong>' + CONFIG.UMBRALES.amarillo + ' - ' + CONFIG.UMBRALES.naranja + ' m</strong></div>';
         html += '<div class="th-row th-naranja"><span>Alerta</span><strong>' + CONFIG.UMBRALES.naranja + ' - ' + CONFIG.UMBRALES.rojo + ' m</strong></div>';
@@ -176,14 +176,15 @@ export function render(state) {
 
     html += '<div class="disclaimer">';
     html += '<div class="disclaimer-title">Aviso importante</div>';
-    html += 'Esta pagina NO es una fuente oficial. Los datos se obtienen mediante lectura automatizada de la web del SAIH Guadalquivir y pueden contener errores, retrasos o interrupciones sin previo aviso. ';
-    html += 'Este monitor no sustituye a los sistemas oficiales de alerta. Ante cualquier situacion de riesgo, consulte siempre a <strong style="color:var(--text-main)">Proteccion Civil (112)</strong> o la <strong style="color:var(--text-main)">Confederacion Hidrografica del Guadalquivir</strong>. ';
-    html += 'El autor no se hace responsable de decisiones tomadas en base a la informacion aqui mostrada.';
+    html += 'Esta página NO es una fuente oficial. Los datos se obtienen mediante lectura automatizada de la web del SAIH Guadalquivir y pueden contener errores, retrasos (habitualmente de hasta 30 minutos) o interrupciones sin previo aviso. Los umbrales de alerta son orientativos, definidos por el autor, y no corresponden a ningún nivel oficial de aviso. ';
+    html += 'Este monitor no sustituye a los sistemas oficiales de alerta. Ante cualquier situación de riesgo, consulte siempre a <strong style="color:var(--text-main)">Protección Civil (112)</strong> o a la <strong style="color:var(--text-main)">Confederación Hidrográfica del Guadalquivir</strong>. ';
+    html += 'El autor no se hace responsable de decisiones tomadas en base a la información aquí mostrada.';
     html += '</div>';
 
     html += '<div class="footer">';
-    html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederacion Hidrografica del Guadalquivir</a>';
-    html += '<br>Actualizacion automatica via GitHub Actions cada 15 min';
+    html += 'Datos: <a href="https://www.chguadalquivir.es/saih" target="_blank" rel="noopener">SAIH - Confederación Hidrográfica del Guadalquivir</a>';
+    html += '<br>Actualización automática vía GitHub Actions cada 15 min';
+    html += '<br><br><span class="footer-privacy">Privacidad: sin cookies ni registro. Estadísticas de visitas anónimas y agregadas (GoatCounter). La preferencia de tema se guarda solo en tu navegador. El alojamiento (GitHub Pages) registra datos técnicos de conexión.</span>';
     html += '<br><br><small>Creado por <a href="https://jfernanro.github.io/" target="_blank" rel="noopener">jfernanro.github.io</a> &middot; v' + (CONFIG.VERSION || '1.0') + '</small>';
     html += '</div>';
 

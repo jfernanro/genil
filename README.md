@@ -29,10 +29,14 @@ js/
   theme.js                          Tema claro/oscuro (localStorage)
   app.js                            Punto de entrada y orquestacion
 css/
+  fonts.css                         @font-face de las fuentes autoalojadas
   variables.css                     Variables CSS (colores, tema)
   base.css                          Reset y layout base
   animations.css                    Keyframes
   components.css                    Estilos de componentes
+fonts/                              Fuentes Outfit y JetBrains Mono (woff2, licencia OFL)
+vendor/
+  chart.umd.min.js                  Chart.js 4.4.0 autoalojado
 icons/
   icon-192x192.png                  Icono PWA 192px
   icon-512x512.png                  Icono PWA 512px
@@ -41,6 +45,8 @@ sw.js                               Service Worker (cache offline)
 ```
 
 ## Umbrales de alerta
+
+Los umbrales son orientativos, definidos por el autor, y no corresponden a ningun nivel oficial de aviso.
 
 | Estado     | Nivel          |
 |------------|----------------|
@@ -55,7 +61,7 @@ sw.js                               Service Worker (cache offline)
 - Python 3.9 (scraper con `requests`)
 - GitHub Actions (automatizacion) + cron-job.org (disparo externo cada 15 min)
 - GitHub Pages (hosting estatico)
-- Chart.js 4.x (graficos)
+- Chart.js 4.4.0 (graficos, autoalojado en `vendor/`)
 - HTML/CSS/JS vanilla con ES modules (sin frameworks)
 - PWA (service worker, manifest, instalable)
 
