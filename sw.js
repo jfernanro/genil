@@ -1,4 +1,4 @@
-var CACHE_NAME = 'genil-v1.8.0';
+var CACHE_NAME = 'genil-v1.9.0';
 
 var STATIC_ASSETS = [
     './index.html',
@@ -9,6 +9,7 @@ var STATIC_ASSETS = [
     './css/components.css',
     './js/config.js',
     './js/utils.js',
+    './js/theme.js',
     './js/api.js',
     './js/chart.js',
     './js/ui.js',

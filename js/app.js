@@ -2,6 +2,7 @@ import { CONFIG } from './config.js';
 import { loadHistorico, fetchData } from './api.js';
 import { render, bindEventListeners } from './ui.js';
 import { initChart } from './chart.js';
+import { toggleTheme } from './theme.js';
 
 var state = {
     nivel: 0,
@@ -25,6 +26,11 @@ function refresh() {
     }
 }
 
+function onToggleTheme() {
+    toggleTheme();
+    refresh();
+}
+
 async function onRefresh() {
     await fetchData(state);
     refresh();
@@ -38,7 +44,7 @@ async function init() {
 
     await fetchData(state);
     refresh();
-    bindEventListeners(state, onRefresh);
+    bindEventListeners(state, onRefresh, onToggleTheme);
 
     setInterval(async function () {
         await fetchData(state);

@@ -1,4 +1,5 @@
 import { formatTime, formatDiaHora } from './utils.js';
+import { cssVar } from './theme.js';
 
 var chartInstance = null;
 
@@ -7,6 +8,11 @@ function dia(ts) {
 }
 
 export function initChart(canvas, historico) {
+    var accent = cssVar('--accent');
+    var muted = cssVar('--text-muted');
+    var gridY = cssVar('--border-faint');
+    var gridX = cssVar('--grid-faint');
+    var solid = cssVar('--bg-solid');
     var muchos = historico.length > 30;
     var multiDia = historico.length > 1 && dia(historico[0].timestamp) !== dia(historico[historico.length - 1].timestamp);
 
@@ -25,7 +31,7 @@ export function initChart(canvas, historico) {
             datasets: [{
                 label: 'Nivel (m)',
                 data: data,
-                borderColor: '#3b82f6',
+                borderColor: accent,
                 backgroundColor: function (context) {
                     var g = context.chart.ctx.createLinearGradient(0, 0, 0, 220);
                     g.addColorStop(0, 'rgba(59,130,246,0.35)');
@@ -38,8 +44,8 @@ export function initChart(canvas, historico) {
                 pointRadius: muchos ? 0 : 4,
                 pointHoverRadius: 5,
                 pointHitRadius: 8,
-                pointBackgroundColor: '#3b82f6',
-                pointBorderColor: '#0f172a',
+                pointBackgroundColor: accent,
+                pointBorderColor: solid,
                 pointBorderWidth: 2
             }]
         },
@@ -62,13 +68,13 @@ export function initChart(canvas, historico) {
             },
             scales: {
                 y: {
-                    grid: { color: 'rgba(51,65,85,0.3)' },
-                    ticks: { color: '#7c8db5', font: { family: 'JetBrains Mono', size: 11 } }
+                    grid: { color: gridY },
+                    ticks: { color: muted, font: { family: 'JetBrains Mono', size: 11 } }
                 },
                 x: {
-                    grid: { color: 'rgba(51,65,85,0.15)' },
+                    grid: { color: gridX },
                     ticks: {
-                        color: '#7c8db5',
+                        color: muted,
                         font: { family: 'Outfit', size: 10 },
                         autoSkip: true,
                         maxTicksLimit: 6,

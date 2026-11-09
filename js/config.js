@@ -14,7 +14,8 @@ export var CONFIG = {
     HISTORICO_MIN: 20,
     DATA_URL: './datos.json',
     HISTORICO_URL: './historico.json',
-    VERSION: '1.8'
+    THEME_KEY: 'genil-theme',
+    VERSION: '1.9'
 };
 
 CONFIG.HISTORICO_MAX = CONFIG.HISTORICO_HORAS * 8;

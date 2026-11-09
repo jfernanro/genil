@@ -1,13 +1,59 @@
 :root {
+    color-scheme: dark;
     --bg-base: #070b14;
     --bg-card: rgba(15, 23, 42, 0.85);
+    --bg-inset-strong: rgba(15, 23, 42, 0.6);
+    --bg-inset: rgba(15, 23, 42, 0.5);
+    --bg-inset-soft: rgba(15, 23, 42, 0.4);
+    --bg-solid: #0f172a;
     --border-card: rgba(51, 65, 85, 0.6);
+    --border-soft: rgba(51, 65, 85, 0.4);
+    --border-faint: rgba(51, 65, 85, 0.3);
+    --grid-faint: rgba(51, 65, 85, 0.15);
     --text-main: #f1f5f9;
     --text-muted: #7c8db5;
+    --text-faint: rgba(124, 141, 181, 0.6);
+    --text-disclaimer: #a0a8c0;
+    --text-caudal: #60a5fa;
+    --text-critico: #fca5a5;
+    --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+    --shadow-text: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --btn-disabled-bg: #334155;
+    --btn-disabled-fg: #64748b;
     --accent: #3b82f6;
     --verde: #22c55e;
     --amarillo: #eab308;
     --naranja: #f97316;
     --rojo: #ef4444;
+    --critico: #991b1b;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+    --bg-base: #eef2f7;
+    --bg-card: rgba(255, 255, 255, 0.92);
+    --bg-inset-strong: #f8fafc;
+    --bg-inset: #f8fafc;
+    --bg-inset-soft: #f1f5f9;
+    --bg-solid: #ffffff;
+    --border-card: rgba(148, 163, 184, 0.45);
+    --border-soft: rgba(148, 163, 184, 0.35);
+    --border-faint: rgba(148, 163, 184, 0.35);
+    --grid-faint: rgba(148, 163, 184, 0.2);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --text-faint: rgba(71, 85, 105, 0.7);
+    --text-disclaimer: #475569;
+    --text-caudal: #2563eb;
+    --text-critico: #991b1b;
+    --shadow-card: 0 4px 18px rgba(15, 23, 42, 0.08);
+    --shadow-text: none;
+    --btn-disabled-bg: #e2e8f0;
+    --btn-disabled-fg: #94a3b8;
+    --accent: #2563eb;
+    --verde: #16a34a;
+    --amarillo: #ca8a04;
+    --naranja: #ea580c;
+    --rojo: #dc2626;
     --critico: #991b1b;
 }

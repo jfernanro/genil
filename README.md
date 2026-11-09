@@ -10,7 +10,7 @@ El proyecto funciona en dos capas independientes:
 
 **Scraper (backend)** - Un script Python ejecutado cada 15 minutos mediante GitHub Actions, disparado desde fuera por un job de cron-job.org (`repository_dispatch`), con el cron de GitHub cada hora como respaldo. Se conecta a la web del SAIH Guadalquivir (directamente o a traves de proxies publicos), localiza la fila de la estacion A17 (Ecija/Genil) en la tabla de aforos, extrae nivel y caudal, y escribe el resultado en `datos.json`. Mantiene un historico persistente de las lecturas de las ultimas 24 horas (minimo 20) en `historico.json`. Solo hace commit si los datos han cambiado.
 
-**Dashboard (frontend)** - PWA instalable servida por GitHub Pages. Consume `datos.json` e `historico.json` y presenta los datos con indicadores visuales de alerta segun umbrales predefinidos. Incluye grafico de tendencia, slider interactivo para ajustar la ventana de analisis temporal y deteccion de datos obsoletos. Se refresca automaticamente cada 60 segundos. Funciona offline mostrando los ultimos datos cacheados.
+**Dashboard (frontend)** - PWA instalable servida por GitHub Pages. Consume `datos.json` e `historico.json` y presenta los datos con indicadores visuales de alerta segun umbrales predefinidos. Incluye grafico de tendencia, slider interactivo para ajustar la ventana de analisis temporal y deteccion de datos obsoletos. Se refresca automaticamente cada 60 segundos. Tiene selector de tema claro u oscuro (boton en la cabecera, se recuerda entre visitas). Funciona offline mostrando los ultimos datos cacheados.
 
 ## Estructura de ficheros
 
@@ -26,6 +26,7 @@ js/
   api.js                            Carga de datos (fetch)
   chart.js                          Grafico Chart.js
   ui.js                             Renderizado y eventos del DOM
+  theme.js                          Tema claro/oscuro (localStorage)
   app.js                            Punto de entrada y orquestacion
 css/
   variables.css                     Variables CSS (colores, tema)

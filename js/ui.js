@@ -1,4 +1,5 @@
 import { CONFIG } from './config.js';
+import { getTheme } from './theme.js';
 import {
     getAlerta, calcTendencia, calcVariacion,
     calcVentanaReal, formatMinutos, formatVentanaEstimada,
@@ -53,6 +54,10 @@ export function render(state) {
     var html = '';
 
     html += '<div class="header">';
+    var dark = getTheme() === 'dark';
+    html += '<button class="theme-toggle" id="btn-theme" type="button" aria-label="' +
+        (dark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro') + '" title="' +
+        (dark ? 'Tema claro' : 'Tema oscuro') + '">' + (dark ? '&#9728;' : '&#9790;') + '</button>';
     html += '<h1>Rio Genil - Ecija</h1>';
     html += '<p class="header-sub">Estacion A17 - SAIH Guadalquivir</p>';
     html += '<span class="live-badge ' + badgeClass + '">';
@@ -96,7 +101,7 @@ export function render(state) {
         html += '<div class="data-grid">';
         html += '<div class="data-box">';
         html += '<div class="data-box-label">Caudal</div>';
-        html += '<div class="data-box-value" style="color:#60a5fa">';
+        html += '<div class="data-box-value" style="color:var(--text-caudal)">';
         html += (state.caudal > 0 ? state.caudal.toFixed(1) + '<span class="data-box-unit">m3/s</span>' : '<span style="color:var(--text-muted);font-size:0.7em">No disponible</span>');
         html += '</div></div>';
 
@@ -214,10 +219,15 @@ function onSliderChange(state, value) {
     }
 }
 
-export function bindEventListeners(state, onRefresh) {
+export function bindEventListeners(state, onRefresh, onToggleTheme) {
     var root = document.getElementById('app');
 
     root.addEventListener('click', function (e) {
+        var themeBtn = e.target.closest('#btn-theme');
+        if (themeBtn) {
+            onToggleTheme();
+            return;
+        }
         var btn = e.target.closest('#btn-refresh');
         if (btn && !btn.disabled) {
             onRefresh();

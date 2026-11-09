@@ -4,6 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- La clave 'genil-theme' debe coincidir con CONFIG.THEME_KEY (js/config.js) -->
+    <script>
+        try {
+            if (localStorage.getItem('genil-theme') === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        } catch (e) { }
+    </script>
     <title>Monitor Rio Genil - Ecija</title>
     <meta name="description" content="Monitor en tiempo real del nivel y caudal del Rio Genil a su paso por Ecija">
     <meta name="theme-color" content="#1e3a8a">
