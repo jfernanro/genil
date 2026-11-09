@@ -57,8 +57,8 @@ export function initChart(canvas, historico) {
                 legend: { display: false },
                 tooltip: {
                     backgroundColor: 'rgba(15,23,42,0.9)',
-                    titleFont: { family: 'Outfit', size: 12 },
-                    bodyFont: { family: 'JetBrains Mono', size: 12 },
+                    titleFont: { family: 'Outfit, sans-serif', size: 12 },
+                    bodyFont: { family: '"JetBrains Mono", monospace', size: 12 },
                     padding: 10,
                     cornerRadius: 8,
                     callbacks: {
@@ -69,13 +69,13 @@ export function initChart(canvas, historico) {
             scales: {
                 y: {
                     grid: { color: gridY },
-                    ticks: { color: muted, font: { family: 'JetBrains Mono', size: 11 } }
+                    ticks: { color: muted, font: { family: '"JetBrains Mono", monospace', size: 11 } }
                 },
                 x: {
                     grid: { color: gridX },
                     ticks: {
                         color: muted,
-                        font: { family: 'Outfit', size: 10 },
+                        font: { family: 'Outfit, sans-serif', size: 10 },
                         autoSkip: true,
                         maxTicksLimit: 6,
                         maxRotation: 0,

@@ -36,13 +36,24 @@ async function onRefresh() {
     refresh();
 }
 
+// Chart.js mide las etiquetas al crearse: si la fuente aún no ha cargado, mide con otra y las corta
+function loadChartFonts() {
+    if (!document.fonts || !document.fonts.load) return Promise.resolve();
+    return Promise.all([
+        document.fonts.load('11px "JetBrains Mono"'),
+        document.fonts.load('10px Outfit')
+    ]).catch(function () { });
+}
+
 async function init() {
+    var fonts = loadChartFonts();
     var entries = await loadHistorico();
     if (entries.length > 0) {
         state.historico = entries;
     }
 
     await fetchData(state);
+    await fonts;
     refresh();
     bindEventListeners(state, onRefresh, onToggleTheme);
 
