@@ -1,10 +1,10 @@
 import { CONFIG } from './config.js';
 
 export function getAlerta(nivel) {
-    if (nivel >= CONFIG.UMBRALES.critico) return { key: 'critico', texto: 'CRITICO' };
+    if (nivel >= CONFIG.UMBRALES.critico) return { key: 'critico', texto: 'CRÍTICO' };
     if (nivel >= CONFIG.UMBRALES.rojo) return { key: 'rojo', texto: 'EMERGENCIA' };
     if (nivel >= CONFIG.UMBRALES.naranja) return { key: 'naranja', texto: 'ALERTA' };
-    if (nivel >= CONFIG.UMBRALES.amarillo) return { key: 'amarillo', texto: 'PRECAUCION' };
+    if (nivel >= CONFIG.UMBRALES.amarillo) return { key: 'amarillo', texto: 'PRECAUCIÓN' };
     return { key: 'verde', texto: 'NORMAL' };
 }
 

@@ -1,8 +1,8 @@
 {
   "id": "/genil/",
-  "name": "Monitor Rio Genil - Ecija",
-  "short_name": "Rio Genil",
-  "description": "Monitor en tiempo real del nivel y caudal del Rio Genil a su paso por Ecija",
+  "name": "Monitor Río Genil - Écija",
+  "short_name": "Río Genil",
+  "description": "Monitor en tiempo real del nivel y caudal del Río Genil a su paso por Écija",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

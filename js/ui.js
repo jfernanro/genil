@@ -18,8 +18,8 @@ export function render(state) {
     if (state.status === 'loading') {
         root.innerHTML =
             '<div class="header">' +
-            '<h1>Rio Genil - Ecija</h1>' +
-            '<p class="header-sub">Estacion A17 - SAIH Guadalquivir</p>' +
+            '<h1>Río Genil - Écija</h1>' +
+            '<p class="header-sub">Estación A17 - SAIH Guadalquivir</p>' +
             '</div>' +
             '<div class="loading-screen">' +
             '<div class="spinner"></div>' +
@@ -58,8 +58,8 @@ export function render(state) {
     html += '<button class="theme-toggle" id="btn-theme" type="button" aria-label="' +
         (dark ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro') + '" title="' +
         (dark ? 'Tema claro' : 'Tema oscuro') + '">' + (dark ? '&#9728;' : '&#9790;') + '</button>';
-    html += '<h1>Rio Genil - Ecija</h1>';
-    html += '<p class="header-sub">Estacion A17 - SAIH Guadalquivir</p>';
+    html += '<h1>Río Genil - Écija</h1>';
+    html += '<p class="header-sub">Estación A17 - SAIH Guadalquivir</p>';
     html += '<span class="live-badge ' + badgeClass + '">';
     html += '<span class="live-dot"></span>';
     html += badgeText;
@@ -68,15 +68,15 @@ export function render(state) {
 
     if (state.status === 'error') {
         html += '<div class="error-box">';
-        html += '<strong style="font-size:1.1em">Error de conexion</strong>';
-        html += '<p>No se pudieron obtener los datos del SAIH. El scraper puede estar caido o el archivo datos.json no esta disponible.</p>';
+        html += '<strong style="font-size:1.1em">Error de conexión</strong>';
+        html += '<p>No se pudieron obtener los datos del SAIH. El scraper puede estar caído o el archivo datos.json no está disponible.</p>';
         html += '</div>';
     }
 
     if (state.status === 'fallback') {
         html += '<div class="error-box warn">';
         html += '<strong style="font-size:1.1em">No se ha podido actualizar</strong>';
-        html += '<p>Ultimo dato valido: ' + formatDateTime(state.timestamp) + (state.lastAttempt ? '<br>Ultimo intento: ' + formatDateTime(state.lastAttempt) : '') + '</p>';
+        html += '<p>Último dato válido: ' + formatDateTime(state.timestamp) + (state.lastAttempt ? '<br>Último intento: ' + formatDateTime(state.lastAttempt) : '') + '</p>';
         html += '</div>';
     }
 
@@ -90,7 +90,7 @@ export function render(state) {
         html += '</div>';
         html += '<div class="alert-pill pill-' + alerta.key + '">' + alerta.texto + '</div>';
         if (stale && state.status === 'ok') {
-            html += '<div class="dato-stale">Dato antiguo - ultima lectura: ' + formatDateTime(state.timestamp) + '</div>';
+            html += '<div class="dato-stale">Dato antiguo - última lectura: ' + formatDateTime(state.timestamp) + '</div>';
         }
         html += '</div>';
     }
@@ -102,11 +102,11 @@ export function render(state) {
         html += '<div class="data-box">';
         html += '<div class="data-box-label">Caudal</div>';
         html += '<div class="data-box-value" style="color:var(--text-caudal)">';
-        html += (state.caudal > 0 ? state.caudal.toFixed(1) + '<span class="data-box-unit">m3/s</span>' : '<span style="color:var(--text-muted);font-size:0.7em">No disponible</span>');
+        html += (state.caudal > 0 ? state.caudal.toFixed(1) + '<span class="data-box-unit">m³/s</span>' : '<span style="color:var(--text-muted);font-size:0.7em">No disponible</span>');
         html += '</div></div>';
 
         html += '<div class="data-box">';
-        html += '<div class="data-box-label">Ultima lectura</div>';
+        html += '<div class="data-box-label">Última lectura</div>';
         html += '<div class="data-box-value" style="font-size:1.1em">';
         html += formatDateTime(state.timestamp);
         html += '</div></div>';
@@ -120,7 +120,7 @@ export function render(state) {
         html += '</div>';
 
         html += '<div class="extra-item">';
-        html += '<div class="extra-label">Variacion</div>';
+        html += '<div class="extra-label">Variación</div>';
         html += '<div class="extra-value" id="val-variacion">' + variacion + '</div>';
         html += '</div>';
 
@@ -133,7 +133,7 @@ export function render(state) {
 
         html += '<div class="slider-wrap">';
         html += '<div class="slider-header">';
-        html += '<span class="slider-title">Ventana de analisis</span>';
+        html += '<span class="slider-title">Ventana de análisis</span>';
         html += '<span class="slider-window" id="slider-badge">' + ventanaTexto + '</span>';
         html += '</div>';
         html += '<div class="slider-track">';
@@ -150,10 +150,10 @@ export function render(state) {
         html += '<div class="thresholds">';
         html += '<div class="thresholds-title">Umbrales de alerta (orientativos)</div>';
         html += '<div class="th-row th-verde"><span>Normal</span><strong>&lt; ' + CONFIG.UMBRALES.amarillo + ' m</strong></div>';
-        html += '<div class="th-row th-amarillo"><span>Precaucion</span><strong>' + CONFIG.UMBRALES.amarillo + ' - ' + CONFIG.UMBRALES.naranja + ' m</strong></div>';
+        html += '<div class="th-row th-amarillo"><span>Precaución</span><strong>' + CONFIG.UMBRALES.amarillo + ' - ' + CONFIG.UMBRALES.naranja + ' m</strong></div>';
         html += '<div class="th-row th-naranja"><span>Alerta</span><strong>' + CONFIG.UMBRALES.naranja + ' - ' + CONFIG.UMBRALES.rojo + ' m</strong></div>';
         html += '<div class="th-row th-rojo"><span>Emergencia</span><strong>' + CONFIG.UMBRALES.rojo + ' - ' + CONFIG.UMBRALES.critico + ' m</strong></div>';
-        html += '<div class="th-row th-critico"><span>Critico</span><strong>&gt; ' + CONFIG.UMBRALES.critico + ' m</strong></div>';
+        html += '<div class="th-row th-critico"><span>Crítico</span><strong>&gt; ' + CONFIG.UMBRALES.critico + ' m</strong></div>';
         html += '</div>';
 
         html += '</div>';
@@ -162,11 +162,11 @@ export function render(state) {
     html += '<div class="card chart-wrap">';
     var n = state.historico.length;
     var periodo = n > 1 ? calcVentanaReal(state.historico, n - 1) : null;
-    html += '<div class="chart-title">Evolucion temporal (' + (periodo !== null ? 'ultimas ' + formatMinutos(periodo) + ', ' : '') + n + ' lecturas)</div>';
+    html += '<div class="chart-title">Evolución temporal (' + (periodo !== null ? 'últimas' + formatMinutos(periodo) + ', ' : '') + n + ' lecturas)</div>';
     if (state.historico.length > 1) {
         html += '<div style="height:220px"><canvas id="chart-canvas"></canvas></div>';
     } else {
-        html += '<div class="chart-empty">Esperando mas lecturas para mostrar la grafica...</div>';
+        html += '<div class="chart-empty">Esperando más lecturas para mostrar la gráfica...</div>';
     }
     html += '</div>';
 
