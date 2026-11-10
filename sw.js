@@ -1,4 +1,4 @@
-var CACHE_NAME = 'genil-v1.12.1';
+var CACHE_NAME = 'genil-v1.13.0';
 
 var STATIC_ASSETS = [
     './index.html',
@@ -14,6 +14,7 @@ var STATIC_ASSETS = [
     './js/api.js',
     './js/chart.js',
     './js/ui.js',
+    './js/install.js',
     './js/app.js',
     './vendor/chart.umd.min.js',
     './fonts/outfit-latin-400-normal.woff2',

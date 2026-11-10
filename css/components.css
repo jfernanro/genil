@@ -591,3 +591,88 @@ canvas {
     line-height: 1.5;
     font-size: 0.95em;
 }
+
+/* Install banner */
+.install-banner {
+    position: fixed;
+    left: 50%;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 16px);
+    opacity: 0;
+    transition: transform 0.25s, opacity 0.25s;
+    width: calc(100% - 24px);
+    max-width: 520px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 8px 10px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    backdrop-filter: blur(12px);
+    color: var(--text-main);
+}
+
+.install-banner[hidden] {
+    display: none;
+}
+
+.install-banner.is-visible {
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+.install-text {
+    flex: 1;
+    font-size: 0.85em;
+    line-height: 1.4;
+}
+
+.install-share-icon {
+    display: inline-block;
+    vertical-align: -3px;
+}
+
+.install-btn {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 9px 16px;
+    border: none;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.install-btn:hover {
+    filter: brightness(1.15);
+}
+
+.install-close {
+    flex-shrink: 0;
+    min-width: 40px;
+    min-height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 1.4em;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.install-close:hover {
+    color: var(--text-main);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .install-banner {
+        transition: none;
+    }
+}

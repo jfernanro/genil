@@ -15,7 +15,10 @@ export var CONFIG = {
     DATA_URL: './datos.json',
     HISTORICO_URL: './historico.json',
     THEME_KEY: 'genil-theme',
-    VERSION: '1.12.1'
+    INSTALL_KEY: 'genil-install-dismissed',
+    INSTALL_REPROMPT_HORAS: 24,
+    INSTALL_DELAY_MS: 4000,
+    VERSION: '1.13'
 };
 
 CONFIG.HISTORICO_MAX = CONFIG.HISTORICO_HORAS * 8;

@@ -12,6 +12,10 @@ El proyecto funciona en dos capas independientes:
 
 **Dashboard (frontend)** - PWA instalable servida por GitHub Pages. Consume `datos.json` e `historico.json` y presenta los datos con indicadores visuales de alerta segun umbrales predefinidos. Incluye grafico de tendencia, slider interactivo para ajustar la ventana de analisis temporal y deteccion de datos obsoletos. Se refresca automaticamente cada 60 segundos. Tiene selector de tema claro u oscuro (boton en la cabecera, se recuerda entre visitas). Funciona offline mostrando los ultimos datos cacheados.
 
+## Uso
+
+Abre https://jfernanro.github.io/genil/ en el movil. En Android aparece un aviso para instalar la app; en iPhone, pulsa Compartir y despues "Añadir a pantalla de inicio".
+
 ## Estructura de ficheros
 
 ```
@@ -27,6 +31,7 @@ js/
   chart.js                          Grafico Chart.js
   ui.js                             Renderizado y eventos del DOM
   theme.js                          Tema claro/oscuro (localStorage)
+  install.js                        Aviso para instalar la app
   app.js                            Punto de entrada y orquestacion
 css/
   fonts.css                         @font-face de las fuentes autoalojadas

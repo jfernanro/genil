@@ -3,6 +3,7 @@ import { loadHistorico, fetchData } from './api.js';
 import { render, bindEventListeners } from './ui.js';
 import { initChart } from './chart.js';
 import { toggleTheme } from './theme.js';
+import { initInstall } from './install.js';
 
 var state = {
     nivel: 0,
@@ -68,5 +69,7 @@ if ('serviceWorker' in navigator) {
         console.warn('SW registro fallido:', err);
     });
 }
+
+initInstall();
 
 init();
